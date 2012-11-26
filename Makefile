@@ -1,5 +1,5 @@
 JAVAC = javac
-JFLAGS = -d bin -cp ojdbc14.jar #-g
+JFLAGS = -d bin #-g
 
 SOURCES = $(wildcard src/*.java)
 CLASSES = $(SOURCES:.java=.class)
@@ -7,7 +7,7 @@ CLASSES = $(SOURCES:.java=.class)
 all: $(CLASSES)
 
 %.class : %.java
-	$(JAVAC) $(JFLAGS) $<
+	$(JAVAC) $(JFLAGS) $(SOURCES)
 
 clean:
 	rm -f bin/*.class
