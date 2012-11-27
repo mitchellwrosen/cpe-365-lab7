@@ -19,7 +19,7 @@ public class InnReservations {
 
       // Read ServerSettings.txt.
       try {
-         FileInputStream in = new FileInputStream("ServerSettings.txt");
+         FileInputStream in = new FileInputStream("config/ServerSettings.txt");
          BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
          server = br.readLine();
@@ -53,16 +53,12 @@ public class InnReservations {
 
       // Check for existence of Rooms and Reservations tables.
       System.out.println("Checking for existence of " +
-            DatabaseConstants.ROOMS_TABLENAME);
-      Integer numRooms = InnDatabaseUtils.GetNumRooms(handle);
-      if (numRooms == null)
-         InnDatabaseUtils.CreateRoomsTable(handle);
-
-      System.out.println("Checking for existence of " +
+            DatabaseConstants.ROOMS_TABLENAME + " and " +
             DatabaseConstants.RESERVATIONS_TABLENAME);
-      Integer numReservations = InnDatabaseUtils.GetNumReservations(handle);
-      if (numReservations == null)
-         InnDatabaseUtils.CreateReservationsTable(handle);
+      if (InnDatabaseUtils.GetNumRooms(handle) == null ||
+            InnDatabaseUtils.GetNumReservations(handle) == null) {
+         InnDatabaseUtils.CreateTables(handle);
+      }
 
       System.out.println("Showing GUI.");
       createAndShowGUI();
@@ -81,7 +77,7 @@ public class InnReservations {
       tabs.addTab("Owner", ownerPanel);
       tabs.addTab("Guest", guestPanel);
 
-      frame.setSize(500, 500);
+      frame.setSize(800, 800); // TODO(mwrosen): Why doesn't this work?
       frame.add(tabs);
       frame.pack();
       frame.setVisible(true);

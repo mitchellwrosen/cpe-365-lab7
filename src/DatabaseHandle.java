@@ -1,18 +1,31 @@
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class DatabaseHandle {
    private Connection conn;
+   private Statement statement;
 
    public DatabaseHandle(Connection conn) {
       this.conn = conn;
+
+      createStatement();
+   }
+
+   public void createStatement() {
+      try {
+         this.statement = conn.createStatement();
+      } catch (java.sql.SQLException e) {
+         System.out.println(e);
+         System.exit(1);
+      }
    }
 
    public void executeStatement(String statement) {
       try {
-         conn.createStatement().executeUpdate(statement);
-      } catch (Exception e) {
-         System.out.println(e);
+         this.statement.executeUpdate(statement);
+      } catch (java.sql.SQLException e) {
+         System.out.println(e + " (\"" + statement + "\")");
       }
    }
 
@@ -20,9 +33,9 @@ public class DatabaseHandle {
       ResultSet result = null;
 
       try {
-         result = conn.createStatement().executeQuery(statement);
+         result = this.statement.executeQuery(statement);
       } catch (Exception e) {
-         System.out.println(e);
+         System.out.println(e + " (\"" + statement + "\")");
       }
 
       return result;

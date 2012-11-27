@@ -51,10 +51,11 @@ public class AdminPanel extends JPanel {
       clearButton = new JButton("Clear");
       clearButton.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-            handle.executeStatement("DELETE FROM " +
-                  DatabaseConstants.ROOMS_TABLENAME);
+            handle.createStatement();
             handle.executeStatement("DELETE FROM " +
                   DatabaseConstants.RESERVATIONS_TABLENAME);
+            handle.executeStatement("DELETE FROM " +
+                  DatabaseConstants.ROOMS_TABLENAME);
 
             updateStatus();
          }
@@ -67,24 +68,31 @@ public class AdminPanel extends JPanel {
             Integer numReservations = InnDatabaseUtils.GetNumReservations(
                   handle);
 
-            if (numRooms == null || numReservations == null) {
-               InnDatabaseUtils.CreateRoomsTable(handle);
-               InnDatabaseUtils.CreateReservationsTable(handle);
+            if (numRooms != null && numReservations != null &&
+                  numRooms > 0 && numReservations > 0) {
+               statusLabel.setText("Status: full (already loaded)");
+            } else {
+               if (numRooms == null || numReservations == null) {
+                  statusLabel.setText("Status: creating tables...");
+                  InnDatabaseUtils.CreateTables(handle);
+               }
 
-               InnDatabaseUtils.PopulateRoomsTable(handle);
-               InnDatabaseUtils.PopulateReservationsTable(handle);
+               statusLabel.setText("Status: populating tables...");
+               InnDatabaseUtils.PopulateTables(handle);
+
+               updateStatus();
             }
 
             clearButton.setEnabled(true);
             destroyButton.setEnabled(true);
             tablesTabbedPane.setEnabled(true);
-            updateStatus();
          }
       });
 
       destroyButton = new JButton("Destroy");
       destroyButton.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
+            handle.createStatement();
             handle.executeStatement("DROP TABLE " +
                   DatabaseConstants.RESERVATIONS_TABLENAME);
             handle.executeStatement("DROP TABLE " +
@@ -180,17 +188,28 @@ public class AdminPanel extends JPanel {
       model.setRowCount(0);
 
       try {
+         handle.createStatement();
          ResultSet results = handle.executeQuery("SELECT * FROM Rooms");
 
          while (results.next()) {
+            // TODO(mwrosen): Why the FUCK DOESNT THIS WORK!!! FUCK!!!
+            //model.addRow(new Object[]{
+                  //results.getString(0),   // Id
+                  //results.getString(1),   // Name
+                  //results.getInt(2),      // NumBeds
+                  //results.getString(3),   // BedType
+                  //results.getInt(4),      // MaxOccupancy
+                  //results.getInt(5),      // Price
+                  //results.getString(6)    // Decor
+            //});
             model.addRow(new Object[]{
-                  results.getInt(0),      // Id
-                  results.getString(1),   // Name
-                  results.getInt(2),      // NumBeds
-                  results.getString(3),   // BedType
-                  results.getInt(4),      // MaxOccupancy
-                  results.getInt(5),      // Price
-                  results.getString(6)    // Decor
+                  results.getString("Id"),
+                  results.getString("Name"),
+                  results.getInt("NumBeds"),
+                  results.getString("BedType"),
+                  results.getInt("MaxOccupancy"),
+                  results.getInt("Price"),
+                  results.getString("Decor")
             });
          }
       } catch (java.sql.SQLException e) {
@@ -204,20 +223,33 @@ public class AdminPanel extends JPanel {
       model.setRowCount(0);
 
       try {
+         handle.createStatement();
          ResultSet results = handle.executeQuery("SELECT * FROM Reservations");
 
          boolean more = results.next();
          while (more) {
+            // TODO(mwrosen): Why the FUCK DOESNT THIS WORK!!!!! FUCK!!!
+            //model.addRow(new Object[]{
+                  //results.getInt(0),      // Code
+                  //results.getString(1),   // RoomId
+                  //results.getDate(2),     // CheckInDate
+                  //results.getDate(3),     // CheckOutDate
+                  //results.getFloat(4),    // Rate
+                  //results.getString(5),   // LastName
+                  //results.getString(6),   // FirstName
+                  //results.getInt(7),      // NumAdults
+                  //results.getInt(8)       // NumKids
+            //});
             model.addRow(new Object[]{
-                  results.getInt(0),      // Code
-                  results.getString(1),   // RoomId
-                  results.getDate(2),     // CheckInDate
-                  results.getDate(3),     // CheckOutDate
-                  results.getFloat(4),    // Rate
-                  results.getString(5),   // LastName
-                  results.getString(6),   // FirstName
-                  results.getInt(7),      // NumAdults
-                  results.getInt(8)       // NumKids
+                  results.getInt("Code"),
+                  results.getString("RoomId"),
+                  results.getDate("CheckInDate"),
+                  results.getDate("CheckOutDate"),
+                  results.getFloat("Rate"),
+                  results.getString("LastName"),
+                  results.getString("FirstName"),
+                  results.getInt("NumAdults"),
+                  results.getInt("NumKids")
             });
 
             more = results.next();
