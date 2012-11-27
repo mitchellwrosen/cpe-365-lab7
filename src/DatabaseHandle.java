@@ -8,7 +8,7 @@ public class DatabaseHandle {
       this.conn = conn;
    }
 
-   public void ExecuteStatement(String statement) {
+   public void executeStatement(String statement) {
       try {
          conn.createStatement().executeUpdate(statement);
       } catch (Exception e) {
@@ -16,7 +16,7 @@ public class DatabaseHandle {
       }
    }
 
-   public ResultSet ExecuteQuery(String statement) {
+   public ResultSet executeQuery(String statement) {
       ResultSet result = null;
 
       try {

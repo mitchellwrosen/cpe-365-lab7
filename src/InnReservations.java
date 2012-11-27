@@ -3,6 +3,7 @@ import java.io.InputStreamReader;
 import java.io.FileInputStream;
 
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -33,23 +34,35 @@ public class InnReservations {
 
       // Load the database driver.
       try {
+         System.out.println("Loading driver.");
          Class.forName("oracle.jdbc.OracleDriver");
       } catch (ClassNotFoundException e) {
          System.out.println("Driver not found.");
-         //System.exit(1);
+         System.exit(1);
       }
 
       // Establish connection.
       try {
+         System.out.println("Establishing connection.");
          handle = new DatabaseHandle(
                DriverManager.getConnection(server, username, password));
       } catch (Exception e) {
          System.out.println("Could not open connection to database.");
-         //System.exit(1);
+         System.exit(1);
       }
 
-      // TODO: Check for existence of INN tables.
+      // Check for existence of Rooms and Reservations tables.
+      if (handle.executeQuery("SELECT * FROM " +
+            DatabaseConstants.ROOMS_TABLENAME) == null) {
+         handle.executeStatement(DatabaseConstants.ROOMS_TABLE_CREATE);
+      }
 
+      if (handle.executeQuery("SELECT * FROM " +
+            DatabaseConstants.RESERVATIONS_TABLENAME) == null) {
+         handle.executeStatement(DatabaseConstants.RESERVATIONS_TABLE_CREATE);
+      }
+
+      System.out.println("Showing GUI.");
       createAndShowGUI();
    }
 

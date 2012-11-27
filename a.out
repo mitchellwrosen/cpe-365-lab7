@@ -1,2 +1,2 @@
 #!/bin/bash
-java -cp ojdbc.jar:bin InnReservations
+java -cp ojdbc14.jar:bin InnReservations

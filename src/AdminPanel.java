@@ -98,7 +98,7 @@ public class AdminPanel extends JPanel {
       model.setRowCount(0);
 
       try {
-         ResultSet results = handle.ExecuteQuery("SELECT * FROM Rooms");
+         ResultSet results = handle.executeQuery("SELECT * FROM Rooms");
 
          boolean more = results.next();
          while (more) {
@@ -125,7 +125,7 @@ public class AdminPanel extends JPanel {
       model.setRowCount(0);
 
       try {
-         ResultSet results = handle.ExecuteQuery("SELECT * FROM Reservations");
+         ResultSet results = handle.executeQuery("SELECT * FROM Reservations");
 
          boolean more = results.next();
          while (more) {

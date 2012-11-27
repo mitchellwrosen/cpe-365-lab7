@@ -2,11 +2,8 @@ JAVAC = javac
 JFLAGS = -d bin #-g
 
 SOURCES = $(wildcard src/*.java)
-CLASSES = $(SOURCES:.java=.class)
 
-all: $(CLASSES)
-
-%.class : %.java
+all:
 	$(JAVAC) $(JFLAGS) $(SOURCES)
 
 clean:
