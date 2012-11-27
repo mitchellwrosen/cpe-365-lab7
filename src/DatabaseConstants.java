@@ -3,7 +3,7 @@ public class DatabaseConstants {
    public static String[] ROOMS_ATTRS = {
       "Id", "Name", "NumBeds", "BedType", "MaxOccupancy", "Price", "Decor"
    };
-   public static String ROOMS_TABLE_CREATE = 
+   public static String ROOMS_TABLE_CREATE =
       "CREATE TABLE Rooms (" +
       "   Id CHAR(3) PRIMARY KEY," +
       "   Name VARCHAR2(60) NOT NULL," +
@@ -12,7 +12,7 @@ public class DatabaseConstants {
       "   MaxOccupancy INTEGER NOT NULL CHECK(MaxOccupancy > 0)," +
       "   Price INTEGER NOT NULL CHECK(Price > 0)," +
       "   Decor VARCHAR2(20) NOT NULL" +
-      ");";
+      ")";
 
    public static String RESERVATIONS_TABLENAME = "Reservations";
    public static String[] RESERVATIONS_ATTRS = {
@@ -32,6 +32,6 @@ public class DatabaseConstants {
       "NumKids INTEGER NOT NULL CHECK(NumKids >= 0)," +
       "UNIQUE (RoomId, CheckInDate)," +
       "UNIQUE (RoomId, CheckOutDate)" +
-      ");";
+      ")";
 
 }

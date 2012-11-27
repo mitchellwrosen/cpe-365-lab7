@@ -52,15 +52,17 @@ public class InnReservations {
       }
 
       // Check for existence of Rooms and Reservations tables.
-      if (handle.executeQuery("SELECT * FROM " +
-            DatabaseConstants.ROOMS_TABLENAME) == null) {
-         handle.executeStatement(DatabaseConstants.ROOMS_TABLE_CREATE);
-      }
+      System.out.println("Checking for existence of " +
+            DatabaseConstants.ROOMS_TABLENAME);
+      Integer numRooms = InnDatabaseUtils.GetNumRooms(handle);
+      if (numRooms == null)
+         InnDatabaseUtils.CreateRoomsTable(handle);
 
-      if (handle.executeQuery("SELECT * FROM " +
-            DatabaseConstants.RESERVATIONS_TABLENAME) == null) {
-         handle.executeStatement(DatabaseConstants.RESERVATIONS_TABLE_CREATE);
-      }
+      System.out.println("Checking for existence of " +
+            DatabaseConstants.RESERVATIONS_TABLENAME);
+      Integer numReservations = InnDatabaseUtils.GetNumReservations(handle);
+      if (numReservations == null)
+         InnDatabaseUtils.CreateReservationsTable(handle);
 
       System.out.println("Showing GUI.");
       createAndShowGUI();
