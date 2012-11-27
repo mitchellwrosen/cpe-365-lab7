@@ -1,6 +1,11 @@
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
+import java.lang.Thread;
+import java.lang.Runnable;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -13,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.TableModel;
@@ -46,62 +52,89 @@ public class AdminPanel extends JPanel {
       reservationsLabel = new JLabel("Reservations: ");
       roomsLabel = new JLabel("Rooms: ");
 
-      updateStatus();
-
       clearButton = new JButton("Clear");
       clearButton.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-            handle.createStatement();
-            handle.executeStatement("DELETE FROM " +
-                  DatabaseConstants.RESERVATIONS_TABLENAME);
-            handle.executeStatement("DELETE FROM " +
-                  DatabaseConstants.ROOMS_TABLENAME);
+            new Thread(new Runnable() {
+               public void run() {
+                  setLabelTextOnEDT(statusLabel,
+                                    "Status: clearing database");
+                  setComponentsEnabledOnEDT(false, clearButton, loadButton,
+                                            destroyButton, tablesTabbedPane);
 
-            updateStatus();
+                  handle.createStatement();
+                  handle.executeStatement("DELETE FROM " +
+                        DatabaseConstants.RESERVATIONS_TABLENAME);
+                  handle.executeStatement("DELETE FROM " +
+                        DatabaseConstants.ROOMS_TABLENAME);
+
+                  updateStatus();
+               }
+            }).start();
          }
       });
 
       loadButton = new JButton("Load");
       loadButton.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-            Integer numRooms = InnDatabaseUtils.GetNumRooms(handle);
-            Integer numReservations = InnDatabaseUtils.GetNumReservations(
-                  handle);
+            new Thread(new Runnable() {
+               public void run() {
+                  setComponentsEnabledOnEDT(false, clearButton, loadButton,
+                                            destroyButton, tablesTabbedPane);
 
-            if (numRooms != null && numReservations != null &&
-                  numRooms > 0 && numReservations > 0) {
-               statusLabel.setText("Status: full (already loaded)");
-            } else {
-               if (numRooms == null || numReservations == null) {
-                  statusLabel.setText("Status: creating tables...");
-                  InnDatabaseUtils.CreateTables(handle);
+                  setLabelTextOnEDT(statusLabel,
+                                    "Status: determining database status");
+
+                  Integer numRooms = InnDatabaseUtils.GetNumRooms(handle);
+                  Integer numReservations = InnDatabaseUtils.GetNumReservations(
+                        handle);
+
+                  if (numRooms != null && numReservations != null &&
+                        numRooms > 0 && numReservations > 0) {
+                     setLabelTextOnEDT(statusLabel,
+                                       "Status: full (already loaded)");
+
+                     setComponentsEnabledOnEDT(true, clearButton, loadButton,
+                                               destroyButton, tablesTabbedPane);
+                  } else {
+                     if (numRooms == null || numReservations == null) {
+                        setLabelTextOnEDT(statusLabel,
+                                          "Status: creating tables");
+
+                        InnDatabaseUtils.CreateTables(handle);
+                     }
+
+                     setLabelTextOnEDT(statusLabel,
+                                       "Status: populating tables");
+                     InnDatabaseUtils.PopulateTables(handle);
+
+                     updateStatus();
+                  }
                }
-
-               statusLabel.setText("Status: populating tables...");
-               InnDatabaseUtils.PopulateTables(handle);
-
-               updateStatus();
-            }
-
-            clearButton.setEnabled(true);
-            destroyButton.setEnabled(true);
-            tablesTabbedPane.setEnabled(true);
+            }).start();
          }
       });
 
       destroyButton = new JButton("Destroy");
       destroyButton.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-            handle.createStatement();
-            handle.executeStatement("DROP TABLE " +
-                  DatabaseConstants.RESERVATIONS_TABLENAME);
-            handle.executeStatement("DROP TABLE " +
-                  DatabaseConstants.ROOMS_TABLENAME);
+            new Thread(new Runnable() {
+               public void run() {
+                  setComponentsEnabledOnEDT(false, clearButton, loadButton,
+                                            destroyButton, tablesTabbedPane);
 
-            clearButton.setEnabled(false);
-            destroyButton.setEnabled(false);
-            tablesTabbedPane.setEnabled(false);
-            updateStatus();
+                  setLabelTextOnEDT(statusLabel,
+                                    "Status: dropping tables");
+
+                  handle.createStatement();
+                  handle.executeStatement("DROP TABLE " +
+                        DatabaseConstants.RESERVATIONS_TABLENAME);
+                  handle.executeStatement("DROP TABLE " +
+                        DatabaseConstants.ROOMS_TABLENAME);
+
+                  updateStatus();
+               }
+            }).start();
          }
       });
 
@@ -125,6 +158,8 @@ public class AdminPanel extends JPanel {
          }
       });
 
+      updateStatus();
+
       labelsPanel = new JPanel();
       labelsPanel.setLayout(new BoxLayout(labelsPanel, BoxLayout.LINE_AXIS));
       labelsPanel.add(statusLabel);
@@ -147,21 +182,83 @@ public class AdminPanel extends JPanel {
       add(tablesTabbedPane);
    }
 
+   private void setLabelTextOnEDT(final JLabel label, final String status) {
+      assert(!EventQueue.isDispatchThread());
+
+      try {
+         SwingUtilities.invokeAndWait(new Runnable() {
+            public void run() {
+               label.setText(status);
+            }
+         });
+      } catch (Exception e) {
+         System.out.println(e);
+      }
+   }
+
+   private void setComponentsEnabledOnEDT(final boolean enabled,
+                                          final Component... components) {
+      try {
+         SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+               for (Component component : components)
+                  component.setEnabled(enabled);
+            }
+         });
+      } catch (Exception e) {
+         System.out.println(e);
+      }
+   }
+
    private void updateStatus() {
+      if (EventQueue.isDispatchThread()) {
+         new Thread(new Runnable() {
+            public void run() {
+               updateStatus_();
+            }
+         });
+      } else {
+         updateStatus_();
+      }
+   }
+
+   private void updateStatus_() {
+      assert(!EventQueue.isDispatchThread());
+
+      setLabelTextOnEDT(statusLabel,
+                        "Status: determining database status");
+
       Integer numRooms = InnDatabaseUtils.GetNumRooms(handle);
       Integer numReservations = InnDatabaseUtils.GetNumReservations(handle);
 
+      // Populate the currently selected table.
+      if (tablesTabbedPane.getSelectedIndex() == TAB_INDEX_ROOMS)
+         populateRoomsJTable();
+      else
+         populateReservationsJTable();
+
+
       if (numRooms == null || numReservations == null) {
-         statusLabel.setText("Status: no database");
-         roomsLabel.setText("Rooms: N/A");
-         reservationsLabel.setText("Reservations: N/A");
+         setLabelTextOnEDT(statusLabel, "Status: no database");
+         setLabelTextOnEDT(roomsLabel, "Rooms: N/A");
+         setLabelTextOnEDT(reservationsLabel, "Reservations: N/A");
+
+         setComponentsEnabledOnEDT(true, loadButton);
       } else {
-         roomsLabel.setText("Rooms: " + numRooms);
-         reservationsLabel.setText("Reservations: " + numReservations);
-         if (numRooms == 0 && numReservations == 0)
-            statusLabel.setText("Status: empty");
-         else
-            statusLabel.setText("Status: full");
+         setLabelTextOnEDT(roomsLabel, "Rooms: " + numRooms);
+         setLabelTextOnEDT(reservationsLabel,
+                           "Reservations: " + numReservations);
+
+         if (numRooms == 0 && numReservations == 0) {
+            setLabelTextOnEDT(statusLabel, "Status: empty");
+            setComponentsEnabledOnEDT(true, loadButton, destroyButton,
+                                      tablesTabbedPane);
+         } else {
+            setLabelTextOnEDT(statusLabel, "Status: full");
+
+            setComponentsEnabledOnEDT(true, clearButton, loadButton,
+                                      destroyButton, tablesTabbedPane);
+         }
       }
    }
 
@@ -184,79 +281,98 @@ public class AdminPanel extends JPanel {
    }
 
    private void populateRoomsJTable() {
-      DefaultTableModel model = (DefaultTableModel) roomsTable.getModel();
+      if (EventQueue.isDispatchThread()) {
+         new Thread(new Runnable() {
+            public void run() {
+               populateRoomsJTable_();
+            }
+         }).start();
+      } else {
+         populateRoomsJTable_();
+      }
+   }
+
+   private void populateRoomsJTable_() {
+      setLabelTextOnEDT(statusLabel, "Status: filling rooms table");
+
+      final DefaultTableModel model = (DefaultTableModel) roomsTable.getModel();
       model.setRowCount(0);
 
-      try {
-         handle.createStatement();
-         ResultSet results = handle.executeQuery("SELECT * FROM Rooms");
+      handle.createStatement();
+      final ResultSet results = handle.executeQuery("SELECT * FROM Rooms");
 
-         while (results.next()) {
-            // TODO(mwrosen): Why the FUCK DOESNT THIS WORK!!! FUCK!!!
-            //model.addRow(new Object[]{
-                  //results.getString(0),   // Id
-                  //results.getString(1),   // Name
-                  //results.getInt(2),      // NumBeds
-                  //results.getString(3),   // BedType
-                  //results.getInt(4),      // MaxOccupancy
-                  //results.getInt(5),      // Price
-                  //results.getString(6)    // Decor
-            //});
-            model.addRow(new Object[]{
-                  results.getString("Id"),
-                  results.getString("Name"),
-                  results.getInt("NumBeds"),
-                  results.getString("BedType"),
-                  results.getInt("MaxOccupancy"),
-                  results.getInt("Price"),
-                  results.getString("Decor")
-            });
-         }
-      } catch (java.sql.SQLException e) {
-         System.out.println(e);
+      if (results != null) {
+         SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+               try {
+                  while (results.next()) {
+                     model.addRow(new Object[]{
+                           results.getString("Id"),
+                           results.getString("Name"),
+                           results.getInt("NumBeds"),
+                           results.getString("BedType"),
+                           results.getInt("MaxOccupancy"),
+                           results.getInt("Price"),
+                           results.getString("Decor")
+                     });
+                  }
+
+                  statusLabel.setText("Status: done");
+               } catch (java.sql.SQLException e) {
+                  System.out.println(e);
+               }
+            }
+         });
       }
    }
 
    private void populateReservationsJTable() {
-      DefaultTableModel model =
+      if (EventQueue.isDispatchThread()) {
+         new Thread(new Runnable() {
+            public void run() {
+               populateReservationsJTable_();
+            }
+         }).start();
+      } else {
+         populateReservationsJTable_();
+      }
+   }
+
+   private void populateReservationsJTable_() {
+      setLabelTextOnEDT(statusLabel, "Status: filling reservations table");
+
+      final DefaultTableModel model =
             (DefaultTableModel) reservationsTable.getModel();
       model.setRowCount(0);
 
-      try {
-         handle.createStatement();
-         ResultSet results = handle.executeQuery("SELECT * FROM Reservations");
+      handle.createStatement();
+      final ResultSet results = handle.executeQuery(
+            "SELECT * FROM Reservations");
 
-         boolean more = results.next();
-         while (more) {
-            // TODO(mwrosen): Why the FUCK DOESNT THIS WORK!!!!! FUCK!!!
-            //model.addRow(new Object[]{
-                  //results.getInt(0),      // Code
-                  //results.getString(1),   // RoomId
-                  //results.getDate(2),     // CheckInDate
-                  //results.getDate(3),     // CheckOutDate
-                  //results.getFloat(4),    // Rate
-                  //results.getString(5),   // LastName
-                  //results.getString(6),   // FirstName
-                  //results.getInt(7),      // NumAdults
-                  //results.getInt(8)       // NumKids
-            //});
-            model.addRow(new Object[]{
-                  results.getInt("Code"),
-                  results.getString("RoomId"),
-                  results.getDate("CheckInDate"),
-                  results.getDate("CheckOutDate"),
-                  results.getFloat("Rate"),
-                  results.getString("LastName"),
-                  results.getString("FirstName"),
-                  results.getInt("NumAdults"),
-                  results.getInt("NumKids")
-            });
+      if (results != null) {
+         SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+               try {
+                  while (results.next()) {
+                     model.addRow(new Object[]{
+                           results.getInt("Code"),
+                           results.getString("RoomId"),
+                           results.getDate("CheckInDate"),
+                           results.getDate("CheckOutDate"),
+                           results.getFloat("Rate"),
+                           results.getString("LastName"),
+                           results.getString("FirstName"),
+                           results.getInt("NumAdults"),
+                           results.getInt("NumKids")
+                     });
+                  }
 
-            more = results.next();
-         }
-      } catch (java.sql.SQLException e) {
-         System.out.println(e);
+                  statusLabel.setText("Status: done");
+               } catch (java.sql.SQLException e) {
+                  System.out.println(e);
+               }
+            }
+         });
       }
-
    }
 }
