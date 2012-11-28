@@ -2,7 +2,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.sql.SQLException;
+import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -28,7 +29,6 @@ public class OwnerPanel extends JPanel {
 	private JTable OccupancyTable;
 	private JTextField OccStartText;
 	private JTextField OccStopText;
-	private final String[] occTableColName = { "Room", "Status" };
 	
 	/* Revenue Members */
 	private JTabbedPane RevenueTab;
@@ -36,9 +36,6 @@ public class OwnerPanel extends JPanel {
 	private JButton RevenueReservationsButton;
 	private JButton RevenueOccupiedButton;
 	private JTable RevenueTable;
-	private final String[] RevenueTableColName = { "Jan.", "Feb.", "Mar.",
-			"Apr.", "May.", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.",
-			"Dec.", "Total" };
 	
 	/* Reservation Members */
 	private JTabbedPane ReservationsTab;
@@ -46,29 +43,28 @@ public class OwnerPanel extends JPanel {
 	private JTextField ReservationStartText;
 	private JTextField ReservationStopText;
 	private JTable ReservationsTable;
-	private final String[] RsvTableColName = { "Id.", "Room Name", "Check In",
-			"Check Out" };
 
 	/* Room Members */
 	private JTabbedPane RoomsTab;
 	private JButton RoomsInformationButton;
 	private JButton RoomsReservationsButton;
 	private JTable RoomsTable;
-	private final String[] RoomsTableColName = { "Room Name" };
 
 	public OwnerPanel(DatabaseHandle handle) {
 		this.handle = handle;
+		Owner.setHandle(handle);
 		createOwnerTabs();
 	}
 
 	private void createOwnerTabs() {
+		
 		ownerTabs = new JTabbedPane();
-
 		ownerTabs.addTab("Occupancy", createOccupancyTab());
 		ownerTabs.addTab("Revenue", createRevenueTab());
 		ownerTabs.addTab("Reservations", createReservationsTab());
 		ownerTabs.addTab("Rooms", createRoomsTab());
 		this.add(ownerTabs);
+		
 	}
 	
 	/*
@@ -99,33 +95,44 @@ public class OwnerPanel extends JPanel {
 		hBox.add(Box.createHorizontalStrut(strutSize));
 
 		
-		OccupancyTable = createOccupancyTable();
+		
 
 		vBox.add(hBox);
 		vBox.add(Box.createVerticalStrut(strutSize));
-		vBox.add(new JScrollPane(OccupancyTable));
 		OccupancyTab = new JTabbedPane();
 		OccupancyTab.add(vBox);
 		return OccupancyTab;
 	}
 	private void occupancyAction() {
-		System.out.println("User input->" + this.OccStartText.getText() 
-				+ " " + this.OccStopText.getText());
-		new ReservationListPanel("2","29-MAR-2010","01-DEC-2020").setVisible(true); /* TODO: Pick out Id */
+		try {
+			System.out.println("User input->" + this.OccStartText.getText() 
+					+ " " + this.OccStopText.getText());
+			if( this.OccStartText.getText().length() != 0 && this.OccStopText.getText().length() != 0) {
+				new PopPanel(Owner.getOccupancy(this.OccStartText.getText(),this.OccStopText.getText()),Owner.OccupancyColV).setVisible(true); /* TODO: Pick out Id */
+			}
+			else if ( this.OccStartText.getText().length() != 0) {
+				new PopPanel(Owner.getOccupancy(this.OccStartText.getText()),Owner.OccupancyColV).setVisible(true);
+			}
+			else System.out.print("POOP\n");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	private JTable createOccupancyTable() {
-		/* TODO(mmtondre): temporary for ui proto */
-		JTable ret = new JTable(new DefaultTableModel(occTableColName, 12));
+	/*private JTable createOccupancyTable() {
+		//JTable ret = new JTable(new DefaultTableModel(Owner.OccupancyCol, 12));
+		JTable ret = new JTable(Owner.getOccupancy("", ""),Owner.OccupancyColV);
 		ret.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {
 				JTable target = (JTable)e.getSource();
 				int row = target.getSelectedRow();
-				new OwnerPanel.ReservationListPanel("2","29-MAR-2010","01-DEC-2020").setVisible(true); /* TODO pickout id */
+				new OwnerPanel.ReservationListPanel("2","29-MAR-2010","01-DEC-2020").setVisible(true); 
 			}
 		});
 		return ret;
 	}
+	*/
 
 	/*
 	 * OR-2 REVENUE 
@@ -179,8 +186,7 @@ public class OwnerPanel extends JPanel {
 		System.out.println("Revenue->Reservations Pressed");
 	}
 	private JTable createRevenueTable() {
-		return new JTable(
-				new DefaultTableModel(RevenueTableColName, 12));
+		return new JTable(Owner.getMonthlyRevenueReservations("",""),Owner.RevenueColNameV);
 	}
 	
 	/*
@@ -235,7 +241,7 @@ public class OwnerPanel extends JPanel {
 	}
 	
 	private JTable createReservationsTable() {
-		JTable ret = new JTable(new DefaultTableModel(RsvTableColName, 10));
+		JTable ret = new JTable(Owner.getReservations("","",""),Owner.ReservationColNameV);
 		ret.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {
 				JTable target = (JTable)e.getSource();
@@ -291,7 +297,7 @@ public class OwnerPanel extends JPanel {
 		System.out.println("Rooms-Reservations Pressed");
 	}
 	private JTable createRoomsTable() {
-		return new JTable(new DefaultTableModel(RoomsTableColName, 12));
+		return new JTable(Owner.getRooms(),Owner.roomsColV);
 	}
 	
 	private class RoomInfoPanel extends JFrame {
@@ -342,15 +348,27 @@ public class OwnerPanel extends JPanel {
 			pack();
 		}
 	}
+	private class PopPanel extends JFrame {
+		private static final long serialVersionUID = 1L;
+		private JPanel panel;
+		private JTable table;
+		public PopPanel( Vector<Vector<String>> data, Vector<String> colNames) {
+			panel = new JPanel();
+			add(panel);
+			table = new JTable(data,colNames);
+			panel.add(new JScrollPane(table));
+			panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+			pack();
+		}
+	}
 	private class ReservationListPanel extends JFrame {
 		private static final long serialVersionUID = 1L;
 		private JPanel panel;
 		private JTable table;
-		private final String [] colName = { "Reservation", "Room Name", "CheckIn","CheckOut" };
 		public ReservationListPanel(String roomID, String start, String end) {
 			panel = new JPanel();
 			add(panel);
-			table = new JTable(new DefaultTableModel(colName,24));
+			table = new JTable(Owner.getRoomOccupancy("","",""),Owner.roomOccupancyColV);
 			panel.add(new JScrollPane(table));
 			panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
 			pack();
