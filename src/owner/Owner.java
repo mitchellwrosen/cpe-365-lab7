@@ -1,9 +1,12 @@
-package calpoly;
+package owner;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Vector;
+
+import calpoly.DatabaseConstants;
+import calpoly.DatabaseHandle;
 
 
 
