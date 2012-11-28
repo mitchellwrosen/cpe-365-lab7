@@ -1,20 +1,28 @@
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 public class OwnerPanel extends JPanel {
    private DatabaseHandle handle;
+   
+   //buttons across top
+   //Panel: TopPanel
+   private JPanel topPanel;
+   //Button: Rooms and Rates
+   private JButton roomsAndRatesButton;
+   //Button: Reservations
+   private JButton reservationsButton;
 
+   //Rooms and Rates Buttons & Fields
+   //Left Panel
+   private JPanel leftPanel;
+   //Label: Rooms
+   private JLabel roomsLabel;
+   //Field: clickable list of all rooms
+
+   
    public OwnerPanel(DatabaseHandle handle) {
       this.handle = handle;
       
-      //buttons across top
-      //Panel: TopPanel
-      //Button: Rooms and Rates
-      //Button: Reservations
-      
-      //Rooms and Rates Buttons & Fields
-         //Left Panel
-         //Label: Rooms
-         //Field: clickable list of all rooms
       
          //Middle Panel
          //Label: Selected Room
