@@ -9,12 +9,14 @@
  */
 public class CheckAvailability extends javax.swing.JDialog
 {
+    GuestPanel guestPanel;
     /**
      * Creates new form CheckAvailability
      */
-    public CheckAvailability(java.awt.Frame parent, boolean modal, DatabaseHandle handle)
+    public CheckAvailability(java.awt.Frame parent, boolean modal, GuestPanel panel)
     {
         super(parent, modal);
+        guestPanel = panel;
         initComponents();
     }
 
@@ -35,11 +37,9 @@ public class CheckAvailability extends javax.swing.JDialog
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         checkInYearSpinner = new javax.swing.JSpinner();
-        dayField = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        checkOutDayField = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         checkOutYearSpinner = new javax.swing.JSpinner();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -47,6 +47,8 @@ public class CheckAvailability extends javax.swing.JDialog
         jButton1 = new javax.swing.JButton();
         checkInMonthComboBox = new javax.swing.JComboBox();
         jComboBox1 = new javax.swing.JComboBox();
+        jSpinner1 = new javax.swing.JSpinner();
+        jSpinner2 = new javax.swing.JSpinner();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -63,15 +65,11 @@ public class CheckAvailability extends javax.swing.JDialog
 
         checkInYearSpinner.setModel(new javax.swing.SpinnerListModel(new String[] {"2009", "2010", "2011", "2012", "2013", "2014"}));
 
-        dayField.setText(" ");
-
         jLabel6.setText("Check Out");
 
         jLabel7.setText("Mon:");
 
         jLabel8.setText("Day:");
-
-        checkOutDayField.setText(" ");
 
         jLabel9.setText("Year:");
 
@@ -114,10 +112,21 @@ public class CheckAvailability extends javax.swing.JDialog
         dateTable.getColumnModel().getColumn(2).setResizable(false);
 
         jButton1.setText("Place Reservation");
+        jButton1.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         checkInMonthComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }));
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }));
+
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
+
+        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -136,9 +145,9 @@ public class CheckAvailability extends javax.swing.JDialog
                                     .addComponent(jLabel5))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(dayField)
                                     .addComponent(checkInMonthComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(checkInYearSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(checkInYearSpinner)
+                                    .addComponent(jSpinner1)))
                             .addComponent(jLabel2))
                         .addGap(4, 4, 4)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -151,9 +160,9 @@ public class CheckAvailability extends javax.swing.JDialog
                             .addComponent(jLabel9))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(checkOutDayField)
                             .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(checkOutYearSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(checkOutYearSpinner)
+                            .addComponent(jSpinner2))))
                 .addGap(96, 96, 96))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -178,7 +187,7 @@ public class CheckAvailability extends javax.swing.JDialog
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel8)
-                            .addComponent(checkOutDayField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel9)
@@ -194,7 +203,7 @@ public class CheckAvailability extends javax.swing.JDialog
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
-                            .addComponent(dayField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
@@ -226,13 +235,18 @@ public class CheckAvailability extends javax.swing.JDialog
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
+    {//GEN-HEADEREND:event_jButton1ActionPerformed
+        CompleteReservation reservation = new CompleteReservation(null, false, guestPanel);
+        reservation.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox checkInMonthComboBox;
     private javax.swing.JSpinner checkInYearSpinner;
-    private javax.swing.JTextField checkOutDayField;
     private javax.swing.JSpinner checkOutYearSpinner;
     private javax.swing.JTable dateTable;
-    private javax.swing.JTextField dayField;
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
@@ -246,5 +260,7 @@ public class CheckAvailability extends javax.swing.JDialog
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSpinner jSpinner1;
+    private javax.swing.JSpinner jSpinner2;
     // End of variables declaration//GEN-END:variables
 }

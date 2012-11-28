@@ -59,9 +59,9 @@
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="dayField" max="32767" attributes="0"/>
                                       <Component id="checkInMonthComboBox" max="32767" attributes="0"/>
-                                      <Component id="checkInYearSpinner" alignment="0" min="-2" pref="45" max="-2" attributes="0"/>
+                                      <Component id="checkInYearSpinner" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="jSpinner1" alignment="0" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
@@ -80,9 +80,9 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="checkOutDayField" alignment="0" max="32767" attributes="0"/>
                               <Component id="jComboBox1" max="32767" attributes="0"/>
-                              <Component id="checkOutYearSpinner" alignment="0" min="-2" pref="45" max="-2" attributes="0"/>
+                              <Component id="checkOutYearSpinner" alignment="0" max="32767" attributes="0"/>
+                              <Component id="jSpinner2" alignment="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -117,7 +117,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="checkOutDayField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jSpinner2" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -137,7 +137,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="dayField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jSpinner1" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -198,11 +198,6 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="dayField">
-          <Properties>
-            <Property name="text" type="java.lang.String" value=" "/>
-          </Properties>
-        </Component>
         <Component class="javax.swing.JLabel" name="jLabel6">
           <Properties>
             <Property name="text" type="java.lang.String" value="Check Out"/>
@@ -216,11 +211,6 @@
         <Component class="javax.swing.JLabel" name="jLabel8">
           <Properties>
             <Property name="text" type="java.lang.String" value="Day:"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JTextField" name="checkOutDayField">
-          <Properties>
-            <Property name="text" type="java.lang.String" value=" "/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel9">
@@ -288,6 +278,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Place Reservation"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JComboBox" name="checkInMonthComboBox">
           <Properties>
@@ -326,6 +319,20 @@
                 <StringItem index="10" value="Nov"/>
                 <StringItem index="11" value="Dec"/>
               </StringArray>
+            </Property>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JSpinner" name="jSpinner1">
+          <Properties>
+            <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+              <SpinnerModel initial="1" maximum="31" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+            </Property>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JSpinner" name="jSpinner2">
+          <Properties>
+            <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+              <SpinnerModel initial="1" maximum="31" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
             </Property>
           </Properties>
         </Component>
