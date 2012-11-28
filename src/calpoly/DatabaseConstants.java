@@ -1,3 +1,4 @@
+package calpoly;
 public class DatabaseConstants {
    public static String ROOMS_TABLENAME = "Rooms";
    public static String[] ROOMS_ATTRS = {

@@ -1,3 +1,4 @@
+package calpoly;
 
 import javax.swing.JPanel;
 

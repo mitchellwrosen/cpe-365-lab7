@@ -1,3 +1,4 @@
+package calpoly;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -94,9 +95,6 @@ public class OwnerPanel extends JPanel {
 		hBox.add(OccStopText);
 		hBox.add(Box.createHorizontalStrut(strutSize));
 
-		
-		
-
 		vBox.add(hBox);
 		vBox.add(Box.createVerticalStrut(strutSize));
 		OccupancyTab = new JTabbedPane();
@@ -105,10 +103,22 @@ public class OwnerPanel extends JPanel {
 	}
 	private void occupancyAction() {
 		try {
-			System.out.println("User input->" + this.OccStartText.getText() 
-					+ " " + this.OccStopText.getText());
-			if( this.OccStartText.getText().length() != 0 && this.OccStopText.getText().length() != 0) {
-				new PopPanel(Owner.getOccupancy(this.OccStartText.getText(),this.OccStopText.getText()),Owner.OccupancyColV).setVisible(true); /* TODO: Pick out Id */
+			String start = this.OccStartText.getText();
+			String stop = this.OccStopText.getText();
+			System.out.println("User input->" + start 
+					+ " " + stop);
+			if( start.length() != 0 && stop.length() != 0) {
+				PopPanel pp = new PopPanel(Owner.getOccupancy(start,stop),
+						Owner.OccupancyColV);
+				pp.addMouseAction(new MouseAdapter(){
+					public void mouseClicked(MouseEvent e) {
+						JTable target = (JTable)e.getSource();
+						int row = target.getSelectedRow();
+						String room = (String) target.getValueAt(row, 0);
+						//new OwnerPanel.ReservationListPanel(room,start,stop).setVisible(true); 
+					}
+				});
+				pp.setVisible(true);
 			}
 			else if ( this.OccStartText.getText().length() != 0) {
 				new PopPanel(Owner.getOccupancy(this.OccStartText.getText()),Owner.OccupancyColV).setVisible(true);
@@ -359,6 +369,12 @@ public class OwnerPanel extends JPanel {
 			panel.add(new JScrollPane(table));
 			panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
 			pack();
+		}
+		public void addMouseAction( MouseAdapter MA ) {
+			table.addMouseListener(MA);
+		}
+		public void addAction( ActionListener AL) {
+			/* JTable.addActionListener Doesnt Work */
 		}
 	}
 	private class ReservationListPanel extends JFrame {
