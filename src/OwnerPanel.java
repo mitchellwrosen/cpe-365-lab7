@@ -1,8 +1,13 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -106,11 +111,20 @@ public class OwnerPanel extends JPanel {
 	private void occupancyAction() {
 		System.out.println("User input->" + this.OccStartText.getText() 
 				+ " " + this.OccStopText.getText());
+		new ReservationListPanel("2","29-MAR-2010","01-DEC-2020").setVisible(true); /* TODO: Pick out Id */
 	}
 	
 	private JTable createOccupancyTable() {
 		/* TODO(mmtondre): temporary for ui proto */
-		return new JTable(new DefaultTableModel(occTableColName, 12));
+		JTable ret = new JTable(new DefaultTableModel(occTableColName, 12));
+		ret.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
+				JTable target = (JTable)e.getSource();
+				int row = target.getSelectedRow();
+				new OwnerPanel.ReservationListPanel("2","29-MAR-2010","01-DEC-2020").setVisible(true); /* TODO pickout id */
+			}
+		});
+		return ret;
 	}
 
 	/*
@@ -221,7 +235,15 @@ public class OwnerPanel extends JPanel {
 	}
 	
 	private JTable createReservationsTable() {
-		return new JTable(new DefaultTableModel(RsvTableColName, 10));
+		JTable ret = new JTable(new DefaultTableModel(RsvTableColName, 10));
+		ret.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
+				JTable target = (JTable)e.getSource();
+				int row = target.getSelectedRow();
+				new OwnerPanel.DetailedReservationPanel("3").setVisible(true);
+			}
+		});
+		return ret;
 	}
 	
 	/* 
@@ -261,12 +283,78 @@ public class OwnerPanel extends JPanel {
 		return RoomsTab;
 	}
 	private void RoomsInformationAction() {
+		new RoomInfoPanel("test").setVisible(true); /* TODO: changed Id */
 		System.out.println("Rooms->Information Pressed");
 	}
 	private void RoomsReservationsAction() {
+		new DetailedReservationPanel("test").setVisible(true); /* TODO: changed Id */
 		System.out.println("Rooms-Reservations Pressed");
 	}
 	private JTable createRoomsTable() {
 		return new JTable(new DefaultTableModel(RoomsTableColName, 12));
 	}
+	
+	private class RoomInfoPanel extends JFrame {
+		private static final long serialVersionUID = 1L;
+		JPanel panel;
+		JTable table;
+		public RoomInfoPanel(String ID) {
+			panel = new JPanel();
+			add(panel);
+			Box vBox = Box.createVerticalBox();
+			vBox.add(Box.createVerticalStrut(strutSize));
+			
+			for( String str : DatabaseConstants.ROOMS_ATTRS) {
+				Box hBox = Box.createHorizontalBox();
+				hBox.add(new JLabel(str+":"));
+				hBox.add(Box.createHorizontalStrut(strutSize));
+				hBox.add(new JLabel("N/A")); /* TODO: Implement */
+				vBox.add(hBox);
+				vBox.add(Box.createVerticalStrut(strutSize));
+			}
+			panel.add(vBox);
+			
+			panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+			pack();
+		}
+	};
+	
+	private class DetailedReservationPanel extends JFrame {
+		private static final long serialVersionUID = 1L;
+		private JPanel panel;
+		
+		public DetailedReservationPanel(String ID) {
+			panel = new JPanel();
+			add(panel);
+			Box vBox = Box.createVerticalBox();
+			vBox.add(Box.createVerticalStrut(strutSize));
+			
+			for( String str : DatabaseConstants.RESERVATIONS_ATTRS) {
+				Box hBox = Box.createHorizontalBox();
+				hBox.add(new JLabel(str+":"));
+				hBox.add(Box.createHorizontalStrut(strutSize));
+				hBox.add(new JLabel("N/A")); /* TODO: Implement */
+				vBox.add(hBox);
+				vBox.add(Box.createVerticalStrut(strutSize));
+			}
+			panel.add(vBox);
+			panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+			pack();
+		}
+	}
+	private class ReservationListPanel extends JFrame {
+		private static final long serialVersionUID = 1L;
+		private JPanel panel;
+		private JTable table;
+		private final String [] colName = { "Reservation", "Room Name", "CheckIn","CheckOut" };
+		public ReservationListPanel(String roomID, String start, String end) {
+			panel = new JPanel();
+			add(panel);
+			table = new JTable(new DefaultTableModel(colName,24));
+			panel.add(new JScrollPane(table));
+			panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+			pack();
+		}
+	}
+	
 }
