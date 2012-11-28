@@ -1,192 +1,218 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
-public class GuestPanel extends JPanel {
-   private DatabaseHandle handle;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-   //buttons across top
-   //Panel: TopPanel
-   private JPanel topPanel;
-   private JPanel botPanel;
-   private JPanel roomPanel;
-   private JPanel resPanel;
-   private JPanel roomsListPanel;
-   //Button: Rooms and Rates
-   private JButton roomsAndRatesButton;
-   //Button: Reservations
-   private JButton reservationsButton;
-
-   //Rooms and Rates Buttons & Fields
-   //Left Panel
-   private JPanel leftPanel;
-   private JLabel roomsLabel;
-   private JComboBox roomsCombo;
-   private JLabel selectedRoomLabel;
-   private JTable roomInfoTable;
-   private JButton checkAvailabilityButton;
-
-   //Right Panel
-   private JPanel rightPanel;
-   private JLabel checkInLabel;
-   private JLabel checkOutLabel;
-   private JSpinner checkInMonthSpinner;
-   private JSpinner checkInDaySpinner;
-   private JSpinner checkInYearSpinner;
-   private JSpinner checkOutMonthSpinner;
-   private JSpinner checkOutDaySpinner;
-   private JSpinner checkOutYearSpinner;
-   private JTable datesAvailableTable;
-   private JButton placeReservationButton;
-   
-   //Reservations Buttons & Fields
-   private JPanel resLeftPanel;
-   private JLabel resCheckInLabel;
-   private JLabel resCheckOutLabel;
-   //Label: Select Check-in Date (top of panel)
-   //Spinner(All horizontal): months
-   //Spinner: days
-   //Spinner: years
-
-   //Label: Select Check-out Date (under check-in Fields)
-   //Spinner(All horizontal): months
-   //Spinner: days
-   //Spinner: years
-   //(Under Check out dates)Text field: info on selected room's availability for each night
-
-   //Right Panel
-   private JPanel resRightPanel;
-   //Label: Selected Room
-   //Text field: info on the room selected from field above
-   //Button (At bottom of Panel): Make a Reservation
-   
-   //Reservation Completion Pop-Up
-   //Label: Check-in Date and Check-out Date
-   //Label: Please enter your name
-   //Text Field: Last Name of Guest
-   //Text Field: First Name of Guest
-   //Label: Number of Adults
-   //Spinner: Number of adults staying in room
-   //Label: Number of Children
-   //Spinner: Number of kids staying in room
-   //Label: Discounts
-   //Combo Box for Discounts: No discounts, AARP, or AAA Discount
-   //Button: Place Reservation
-
-   public GuestPanel(DatabaseHandle handle) {
+/**
+ *
+ * @author Charlie
+ */
+public class GuestPanel extends JPanel
+{
+    private DatabaseHandle handle;
+    
+    /**
+     * Creates new form GuestPanel
+     */
+    public GuestPanel(DatabaseHandle handle) {
       this.handle = handle;
       
-      //Left and Right Panel setup
-      leftPanel = new JPanel();
-      leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.LINE_AXIS));
-      rightPanel = new JPanel();
-      rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.LINE_AXIS));
-      resLeftPanel = new JPanel();
-      resLeftPanel.setLayout(new BoxLayout(resLeftPanel, BoxLayout.LINE_AXIS));
-      resRightPanel = new JPanel();
-      resRightPanel.setLayout(new BoxLayout(resRightPanel, BoxLayout.LINE_AXIS));
-      
-      //Label Setup
-      checkInLabel = new JLabel("Check In");
-      checkOutLabel = new JLabel("Check Out");
-      resCheckInLabel = new JLabel("Check In");
-      resCheckOutLabel = new JLabel("Check Out");
-      roomsLabel = new JLabel("Please Select a Room:");
-      selectedRoomLabel = new JLabel("Room Information");
-      
-      //Buttons Setup
-      roomsAndRatesButton = new JButton("Rooms and Rates");
-      roomsAndRatesButton.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent arg0) {
-            roomPanel.setVisible(true);
-            resPanel.setVisible(false);
-         }
-      });
-      
-      reservationsButton = new JButton("Reservations");
-      reservationsButton.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent arg0) {
-            roomPanel.setVisible(false);
-            resPanel.setVisible(true);
-         }
-      });
-      
-      //Create Combo Box
-      createComboBox();
-      roomsListPanel = new JPanel();
-      roomsListPanel.add(roomsCombo);
-      
-      //Create JTables
-      createRoomInfoTable();
-      
-      //Create layout
-      topPanel = new JPanel();
-      topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.LINE_AXIS));
-      topPanel.add(roomsAndRatesButton);
-      topPanel.add(reservationsButton);
-      topPanel.setVisible(true);
-      
-      leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.PAGE_AXIS));
-      leftPanel.setAlignmentX(LEFT_ALIGNMENT);
-      leftPanel.setAlignmentY(LEFT_ALIGNMENT);
-      leftPanel.add(roomsLabel);
-      leftPanel.add(roomsListPanel);
-      leftPanel.add(selectedRoomLabel);
-      leftPanel.add(roomInfoTable);
-      leftPanel.setBackground(Color.BLUE);
-      roomsListPanel.setBackground(Color.RED);
-      
-      rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.PAGE_AXIS));
-      rightPanel.setAlignmentX(LEFT_ALIGNMENT);
-      rightPanel.add(checkInLabel);
-      rightPanel.add(checkOutLabel);
-      
-      roomPanel = new JPanel();
-      roomPanel.setLayout(new BoxLayout(roomPanel, BoxLayout.LINE_AXIS));
-      roomPanel.add(leftPanel);
-      roomPanel.add(rightPanel);
-      
-      resPanel = new JPanel();
-      resPanel.setLayout(new BoxLayout(resPanel, BoxLayout.LINE_AXIS));
-      resPanel.add(resLeftPanel);
-      resPanel.add(resRightPanel);
-      resPanel.setVisible(false);
-      
-      botPanel = new JPanel();
-      botPanel.setLayout(new BoxLayout(botPanel, BoxLayout.LINE_AXIS));
-      botPanel.add(roomPanel);
-      botPanel.add(resPanel);
-      
-      setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-      add(topPanel);
-      add(botPanel);
-      
-   }
-   
-   private void createComboBox()
-   {
-      String[] roomList = {"1", "2", "3", "4", "5"};
-      roomsCombo = new JComboBox(roomList);
-   }
-   
-   private void createRoomInfoTable()
-   {
-      TableModel model = new DefaultTableModel(
-            DatabaseConstants.ROOMS_ATTRS, 5);
-      roomInfoTable = new JTable(model);
-      roomInfoTable.setFillsViewportHeight(true);
-   }
+      initComponents();
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents()
+    {
+
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        roomComboBox = new javax.swing.JComboBox();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        numBedsLabel = new javax.swing.JLabel();
+        roomCodeLabel = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        bedTypeLabel = new javax.swing.JLabel();
+        maxOccupantsLabel = new javax.swing.JLabel();
+        priceLabel = new javax.swing.JLabel();
+        decorLabel = new javax.swing.JLabel();
+        checkAvailabilityButton = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+
+        jLabel1.setText("Select a Room:");
+
+        roomComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Abscond or bolster", "Mendicant with cryptic", "Harbinger but bequest", "Immutable before decorum", "Thrift and accolade", "Convoke and sanguine", "Riddle to exculpate", "Frugal not apropos", "Recluse and defiance", "Interim but salutary" }));
+
+        jLabel2.setText("Room Information:");
+
+        jLabel3.setText("Room Code:");
+
+        jLabel4.setText("Number of Beds:");
+
+        numBedsLabel.setText("jLabel5");
+
+        roomCodeLabel.setText("jLabel6");
+
+        jLabel7.setText("Bed Type:");
+
+        jLabel8.setText("Max Occupants:");
+
+        jLabel9.setText("Price:");
+
+        jLabel10.setText("Decor:");
+
+        bedTypeLabel.setText("jLabel11");
+
+        maxOccupantsLabel.setText("jLabel12");
+
+        priceLabel.setText("jLabel13");
+
+        decorLabel.setText("jLabel14");
+
+        checkAvailabilityButton.setText("Check Availability");
+        checkAvailabilityButton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                checkAvailabilityButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel9)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel10))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(numBedsLabel)
+                            .addComponent(bedTypeLabel)
+                            .addComponent(maxOccupantsLabel)
+                            .addComponent(priceLabel)
+                            .addComponent(roomCodeLabel)
+                            .addComponent(decorLabel)))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(checkAvailabilityButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(roomComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(377, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addGap(7, 7, 7)
+                .addComponent(roomComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(roomCodeLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(numBedsLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(bedTypeLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(maxOccupantsLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(priceLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(decorLabel))
+                .addGap(18, 18, 18)
+                .addComponent(checkAvailabilityButton, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(184, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Rooms and Rates", jPanel1);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 541, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 450, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Reservations", jPanel2);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane1))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void checkAvailabilityButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_checkAvailabilityButtonActionPerformed
+    {//GEN-HEADEREND:event_checkAvailabilityButtonActionPerformed
+        CheckAvailability checkAvail = new CheckAvailability(null, false, handle);
+        checkAvail.setVisible(true);
+    }//GEN-LAST:event_checkAvailabilityButtonActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel bedTypeLabel;
+    private javax.swing.JButton checkAvailabilityButton;
+    private javax.swing.JLabel decorLabel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JLabel maxOccupantsLabel;
+    private javax.swing.JLabel numBedsLabel;
+    private javax.swing.JLabel priceLabel;
+    private javax.swing.JLabel roomCodeLabel;
+    private javax.swing.JComboBox roomComboBox;
+    // End of variables declaration//GEN-END:variables
 }
