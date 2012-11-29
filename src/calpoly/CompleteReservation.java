@@ -58,7 +58,7 @@ public class CompleteReservation extends javax.swing.JDialog
 
         jLabel4.setText("First Name:");
 
-        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(0, 0, 5, 1));
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, 1, 5, 1));
 
         jLabel5.setText("Number of Kids:");
 

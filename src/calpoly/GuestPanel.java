@@ -1,5 +1,9 @@
 package calpoly;
 
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /*
@@ -14,6 +18,12 @@ import javax.swing.JPanel;
 public class GuestPanel extends JPanel
 {
     private DatabaseHandle handle;
+    private int checkInMonth;
+    private int checkInDay;
+    private int checkInYear;
+    private int checkOutMonth;
+    private int checkOutDay;
+    private int checkOutYear;
     
     /**
      * Creates new form GuestPanel
@@ -24,6 +34,65 @@ public class GuestPanel extends JPanel
       initComponents();
     }
 
+    protected DatabaseHandle getHandle()
+    {
+        return handle;
+    }
+    
+    protected String getRoomId()
+    {
+        return roomCodeLabel.getText();
+    }
+    
+    protected double getPrice()
+    {
+        return Double.parseDouble(priceLabel.getText());
+    }
+    
+    protected void updateCheckIn(int month, int day, int year)
+    {
+        checkInMonth = month;
+        checkInDay = day;
+        checkInYear = year;
+    }
+    
+    protected void updateCheckOut(int month, int day, int year)
+    {
+        checkOutMonth = month;
+        checkOutDay = day;
+        checkOutYear = year;
+    }
+    
+    public boolean checkDates(int month, int day, int year, JLabel datesLabel)
+    {
+        if (month == 2 && day > 28)
+        {
+            if (day == 29  && (year % 4) != 0)
+            {
+                datesLabel.setText("This isn't a leap year!");
+                return false;
+            }
+            else if (day > 29)
+            {
+                datesLabel.setText("Invalid check-in day.");
+                return false;
+            }
+        }
+                
+        if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8
+                || month == 10 || month == 12) && day > 31)
+        {
+            return false;
+        }
+        
+        if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -56,8 +125,6 @@ public class GuestPanel extends JPanel
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
-        checkInMonthComboBox = new javax.swing.JComboBox();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         checkInYearSpinner = new javax.swing.JSpinner();
@@ -67,14 +134,41 @@ public class GuestPanel extends JPanel
         checkOutYearSpinner = new javax.swing.JSpinner();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jSpinner1 = new javax.swing.JSpinner();
-        jSpinner2 = new javax.swing.JSpinner();
+        checkInDaySpinner = new javax.swing.JSpinner();
+        checkOutDaySpinner = new javax.swing.JSpinner();
+        checkButton = new javax.swing.JButton();
+        checkInMonthSpinner = new javax.swing.JSpinner();
+        checkOutMonthSpinner = new javax.swing.JSpinner();
+        validDatesLabel = new javax.swing.JLabel();
 
         jLabel1.setText("Select a Room:");
 
-        roomComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Abscond or bolster", "Mendicant with cryptic", "Harbinger but bequest", "Immutable before decorum", "Thrift and accolade", "Convoke and sanguine", "Riddle to exculpate", "Frugal not apropos", "Recluse and defiance", "Interim but salutary" }));
+        ArrayList<String> listRooms = new ArrayList<String>();
+
+        handle.createStatement();
+        final ResultSet results = handle.executeQuery("SELECT Name FROM Rooms");
+
+        try
+        {
+            while (results.next())
+            {
+                listRooms.add(results.getString("Name"));
+
+            }
+        }
+        catch (java.sql.SQLException e)
+        {
+            System.out.println(e);
+        }
+        roomComboBox.setModel(new javax.swing.DefaultComboBoxModel(listRooms.toArray()));
+        roomComboBox.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                roomComboBoxActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("Room Information:");
 
@@ -82,9 +176,9 @@ public class GuestPanel extends JPanel
 
         jLabel4.setText("Number of Beds:");
 
-        numBedsLabel.setText("jLabel5");
+        numBedsLabel.setText("NumBeds");
 
-        roomCodeLabel.setText("jLabel6");
+        roomCodeLabel.setText("Room Code");
 
         jLabel7.setText("Bed Type:");
 
@@ -94,13 +188,13 @@ public class GuestPanel extends JPanel
 
         jLabel10.setText("Decor:");
 
-        bedTypeLabel.setText("jLabel11");
+        bedTypeLabel.setText("BedType");
 
-        maxOccupantsLabel.setText("jLabel12");
+        maxOccupantsLabel.setText("Max Occ");
 
-        priceLabel.setText("jLabel13");
+        priceLabel.setText("Price");
 
-        decorLabel.setText("jLabel14");
+        decorLabel.setText("Decor");
 
         checkAvailabilityButton.setText("Check Availability");
         checkAvailabilityButton.addActionListener(new java.awt.event.ActionListener()
@@ -138,7 +232,7 @@ public class GuestPanel extends JPanel
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(checkAvailabilityButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(roomComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(377, Short.MAX_VALUE))
+                .addContainerGap(366, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -175,8 +269,33 @@ public class GuestPanel extends JPanel
                     .addComponent(decorLabel))
                 .addGap(18, 18, 18)
                 .addComponent(checkAvailabilityButton, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(192, Short.MAX_VALUE))
+                .addContainerGap(224, Short.MAX_VALUE))
         );
+
+        String firstName = (String)roomComboBox.getSelectedItem();
+
+        handle.createStatement();
+        final ResultSet firstResults = handle.executeQuery("SELECT * FROM Rooms");
+
+        try
+        {
+            while (firstResults.next())
+            {
+                if (firstResults.getString("Name").equals(firstName))
+                {
+                    roomCodeLabel.setText(firstResults.getString("Id"));
+                    numBedsLabel.setText(firstResults.getString("NumBeds"));
+                    bedTypeLabel.setText(firstResults.getString("BedType"));
+                    maxOccupantsLabel.setText(firstResults.getString("MaxOccupancy"));
+                    priceLabel.setText(firstResults.getString("Price"));
+                    decorLabel.setText(firstResults.getString("Decor"));
+                }
+            }
+
+        } catch (java.sql.SQLException e)
+        {
+            System.out.println(e);
+        }
 
         jTabbedPane1.addTab("Rooms and Rates", jPanel1);
 
@@ -185,11 +304,6 @@ public class GuestPanel extends JPanel
         jLabel6.setText("Check Out");
 
         jLabel11.setText("Mon:");
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }));
-
-        checkInMonthComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }));
-        checkInMonthComboBox.setMaximumSize(new java.awt.Dimension(45, 20));
 
         jLabel12.setText("Mon:");
 
@@ -209,6 +323,11 @@ public class GuestPanel extends JPanel
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][]
             {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
                 {null, null},
                 {null, null},
                 {null, null},
@@ -243,8 +362,6 @@ public class GuestPanel extends JPanel
         jTable1.getColumnModel().getColumn(0).setResizable(false);
         jTable1.getColumnModel().getColumn(1).setResizable(false);
 
-        jButton1.setText("Place Reservation");
-
         jButton2.setText("Place Reservation");
         jButton2.addActionListener(new java.awt.event.ActionListener()
         {
@@ -254,101 +371,118 @@ public class GuestPanel extends JPanel
             }
         });
 
-        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
+        checkInDaySpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
 
-        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
+        checkOutDaySpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, 31, 1));
+
+        checkButton.setText("Check Dates");
+        checkButton.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                checkButtonActionPerformed(evt);
+            }
+        });
+
+        validDatesLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(75, 75, 75)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addContainerGap(31, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel13)
-                            .addComponent(jLabel12)
-                            .addComponent(jLabel14))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(checkInMonthComboBox, 0, 54, Short.MAX_VALUE)
-                            .addComponent(checkInYearSpinner, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jSpinner1)))
-                    .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 194, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel15)
-                            .addComponent(jLabel11)
-                            .addComponent(jLabel16))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBox1, 0, 54, Short.MAX_VALUE)
-                            .addComponent(checkOutYearSpinner)
-                            .addComponent(jSpinner2))))
-                .addGap(104, 104, 104))
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(160, 160, 160)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(53, Short.MAX_VALUE))
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel2Layout.createSequentialGroup()
-                    .addGap(175, 175, 175)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(175, Short.MAX_VALUE)))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(2, 2, 2)
+                                .addComponent(jLabel5))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel13)
+                                    .addComponent(jLabel12)
+                                    .addComponent(jLabel14))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(checkInYearSpinner, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(checkInDaySpinner)
+                                    .addComponent(checkInMonthSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(26, 26, 26)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(validDatesLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(66, 66, 66))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(checkButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(18, 18, 18)))
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel6)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel15)
+                                            .addComponent(jLabel11)
+                                            .addComponent(jLabel16))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(checkOutYearSpinner)
+                                            .addComponent(checkOutDaySpinner)
+                                            .addComponent(checkOutMonthSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(38, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel11)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel15)
-                            .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel16)
-                            .addComponent(checkOutYearSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2))
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addComponent(validDatesLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(29, 29, 29))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel11)
+                                    .addComponent(checkOutMonthSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel15)
+                                    .addComponent(checkOutDaySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel16)
+                                    .addComponent(checkOutYearSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(5, 5, 5))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel12)
-                            .addComponent(checkInMonthComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel13)
-                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel14)
-                            .addComponent(checkInYearSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(71, 71, 71)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel14)
+                                    .addComponent(checkInYearSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(checkButton)))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel12)
+                                    .addComponent(checkInMonthSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel13)
+                                    .addComponent(checkInDaySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)))
+                .addComponent(jButton2)
+                .addGap(7, 7, 7)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel2Layout.createSequentialGroup()
-                    .addGap(217, 217, 217)
-                    .addComponent(jButton1)
-                    .addContainerGap(218, Short.MAX_VALUE)))
+                .addGap(42, 42, 42))
         );
 
         jTabbedPane1.addTab("Reservations", jPanel2);
@@ -379,16 +513,84 @@ public class GuestPanel extends JPanel
         reservation.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void roomComboBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_roomComboBoxActionPerformed
+    {//GEN-HEADEREND:event_roomComboBoxActionPerformed
+        String name = (String)roomComboBox.getSelectedItem();
+        
+        handle.createStatement();
+        final ResultSet results = handle.executeQuery("SELECT * FROM Rooms");
+        
+        try {
+            while (results.next()) {
+                if (results.getString("Name").equals(name))
+                {
+                    roomCodeLabel.setText(results.getString("Id"));
+                    numBedsLabel.setText(results.getString("NumBeds"));
+                    bedTypeLabel.setText(results.getString("BedType"));
+                    maxOccupantsLabel.setText(results.getString("MaxOccupancy"));
+                    priceLabel.setText(results.getString("Price"));
+                    decorLabel.setText(results.getString("Decor"));
+                }
+            }
+
+        } catch (java.sql.SQLException e) {
+                  System.out.println(e);
+        }
+    }//GEN-LAST:event_roomComboBoxActionPerformed
+
+    private void checkButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_checkButtonActionPerformed
+    {//GEN-HEADEREND:event_checkButtonActionPerformed
+        int checkInMon = (Integer)checkInMonthSpinner.getValue();
+        int checkInDay = (Integer)checkInDaySpinner.getValue();
+        int checkInYear = Integer.parseInt((String)checkInYearSpinner.getValue());
+        int checkOutMon = (Integer)checkOutMonthSpinner.getValue();
+        int checkOutDay = (Integer)checkOutDaySpinner.getValue();
+        int checkOutYear = Integer.parseInt((String)checkOutYearSpinner.getValue());
+
+        if (checkInMon > checkOutMon && checkInYear == checkOutYear)
+        {
+            validDatesLabel.setText("Check-out is before check-in.");
+            return;
+        }
+        else if (checkInDay > checkOutDay && checkInMon == checkOutMon)
+        {
+            validDatesLabel.setText("Check-out is before check-in.");
+            return;
+        }
+        else if(checkInYear > checkOutYear)
+        {
+            validDatesLabel.setText("Invalid check-in year.");
+            return;
+        }
+        else
+        {
+            if (!checkDates(checkInMon, checkInDay, checkInYear, validDatesLabel)
+                || !checkDates(checkOutMon, checkOutDay, checkOutYear, validDatesLabel))
+            {
+                return;
+            }
+        }
+
+        validDatesLabel.setText("");
+
+        DatabaseHandle handle = getHandle();
+
+        handle.createStatement();
+        ResultSet resultSet = handle.executeQuery("");
+    }//GEN-LAST:event_checkButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel bedTypeLabel;
     private javax.swing.JButton checkAvailabilityButton;
-    private javax.swing.JComboBox checkInMonthComboBox;
+    private javax.swing.JButton checkButton;
+    private javax.swing.JSpinner checkInDaySpinner;
+    private javax.swing.JSpinner checkInMonthSpinner;
     private javax.swing.JSpinner checkInYearSpinner;
+    private javax.swing.JSpinner checkOutDaySpinner;
+    private javax.swing.JSpinner checkOutMonthSpinner;
     private javax.swing.JSpinner checkOutYearSpinner;
     private javax.swing.JLabel decorLabel;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -408,8 +610,6 @@ public class GuestPanel extends JPanel
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JSpinner jSpinner2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel maxOccupantsLabel;
@@ -417,5 +617,6 @@ public class GuestPanel extends JPanel
     private javax.swing.JLabel priceLabel;
     private javax.swing.JLabel roomCodeLabel;
     private javax.swing.JComboBox roomComboBox;
+    private javax.swing.JLabel validDatesLabel;
     // End of variables declaration//GEN-END:variables
 }
