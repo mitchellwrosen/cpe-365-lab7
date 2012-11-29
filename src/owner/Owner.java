@@ -69,24 +69,69 @@ public class Owner {
 	}
 	
 	public final static Vector<String> OccupancyColV = new Vector<String>(Arrays.asList(OccupancyCol));
+	/* EXAMPLE  using 01-MAR-2010 AND 02-MAR-2010
+	   (SELECT UNIQUE name, 'Occupied'  
+		  FROM Reservations RE, Rooms RO 
+		  WHERE RE.RoomId=RO.Id 
+		    AND CheckInDate<='01-MAR-2010' 
+		    AND CheckOutDate>='02-MAR-2010') 
+		UNION 
+		(
+		  SELECT UNIQUE name, 'Partially Occupied'
+		    FROM Reservations RE, Rooms RO 
+		    WHERE RE.RoomId=RO.Id 
+		     AND NOT (CheckInDate<='01-MAR-2010' AND CheckOutDate>'02-MAR-2010')
+		     AND (CheckInDate BETWEEN '01-MAR-2010' AND '02-MAR-2010' 
+		     OR (CheckOutDate>'01-MAR-2010' AND CheckOutDate<='02-MAR-2010'))
+		)
+		UNION
+		(SELECT UNIQUE name, 'Unoccupied'  
+		  FROM Rooms RO 
+		  WHERE Id NOT IN 
+		    ((SELECT UNIQUE Id
+		        FROM Reservations RE, Rooms RO 
+		        WHERE RE.RoomId=RO.Id 
+		        AND CheckInDate<='01-MAR-2010' 
+		        AND CheckOutDate>='02-MAR-2010') 
+		    UNION 
+		    (SELECT UNIQUE Id
+		      FROM Reservations RE, Rooms RO 
+		      WHERE RE.RoomId=RO.Id 
+		        AND NOT (CheckInDate<='01-MAR-2010' AND CheckOutDate>'02-MAR-2010')
+		        AND (CheckInDate BETWEEN '01-MAR-2010' AND '02-MAR-2010' 
+		        OR (CheckOutDate>'01-MAR-2010' AND CheckOutDate<='02-MAR-2010'))
+		    ))
+		)
+*/
+	
 	static public Vector<Vector<String>> getOccupancy( String start, String end) throws SQLException {
 		String query;
 		System.out.println("WTF\n");
-			query = "(SELECT UNIQUE name, 'Occupied' " +
-					" FROM Reservations RE, Rooms RO" +
-					" WHERE RE.RoomId=RO.Id" +
-					" AND CheckInDate<='"+start+"'"+
-					" AND CheckOutDate>='"+end+"')"+
-					
-					" UNION(SELECT UNIQUE name, 'Unoccupied' " +
-					" FROM Reservations RE, Rooms RO" +
-					" WHERE RE.RoomId=RO.Id" +
-					" AND RoomId NOT IN " +
-					"(SELECT RoomId " +
-					" FROM Reservations RE, Rooms RO" +
-					" WHERE RE.RoomId=RO.Id" +
-					" AND CheckInDate<='"+start+"'"+
-					" AND CheckOutDate>='"+end+"'))";
+			query = "(SELECT UNIQUE name, 'Occupied'  " +
+					"  FROM Reservations RE, Rooms RO " +
+					"  WHERE RE.RoomId=RO.Id " +
+					"    AND CheckInDate<='"+start+"' " +
+					"    AND CheckOutDate>='"+end+"') " +
+					"UNION (SELECT UNIQUE name, 'Partially  Occupied' " +
+					"    FROM Reservations RE, Rooms RO " +
+					"    WHERE RE.RoomId=RO.Id " +
+					"     AND NOT (CheckInDate<='"+start+"' AND CheckOutDate>'"+end+"') " +
+					"     AND (CheckInDate BETWEEN '"+start+"' AND '"+end+"' " +
+					"     OR (CheckOutDate>'"+start+"' AND CheckOutDate<='"+end+"'))) " +
+					"UNION (SELECT UNIQUE name, 'Unoccupied' " +
+					"  FROM Rooms RO "+
+					"  WHERE Id NOT IN "+
+					"    ((SELECT UNIQUE Id " +
+					"        FROM Reservations RE, Rooms RO " +
+					"        WHERE RE.RoomId=RO.Id " +
+					"        AND CheckInDate<='"+start+"' " +
+					"        AND CheckOutDate>='"+end+"') " +
+					"    UNION (SELECT UNIQUE Id " +
+					"      FROM Reservations RE, Rooms RO " +
+					"      WHERE RE.RoomId=RO.Id " +
+					"        AND NOT (CheckInDate<='"+start+"' AND CheckOutDate>'"+end+"') " +
+					"        AND (CheckInDate BETWEEN '"+start+"' AND '"+end+"' " +
+					"        OR (CheckOutDate>'"+start+"' AND CheckOutDate<='"+end+"'))))) ";
 			System.out.println(query);
 		
 		
@@ -157,11 +202,13 @@ public class Owner {
 		return resToArray(handle.executeQuery(query));
 	}
 	
-	static public String [] getReservation( String roomName, String date) {
-		Vector<Vector<String>> ret = new Vector<Vector<String>>();
-		String [] junk = {"222","12C","03-MAR-2010","05-MAR-2010","5.50","Hanks","Tom","2","3"};
-			
-		return junk;
+	static public String [] getReservation( String roomName, String date) throws SQLException {
+		String query = "SELECT * FROM Reservations RE "+
+					   " WHERE RE.RoomId= (SELECT Id FROM Rooms RO WHERE RO.name='"+roomName+"')"+
+					   " AND CheckInDate<='" +date + "'"+
+					   " AND CheckOutDate>'"+date+"'";
+		
+		return resToArray(handle.executeQuery(query));
 	}
 	static final public Vector<String> DCroomCols = new Vector<String>(Arrays.asList(DatabaseConstants.ROOMS_ATTRS));
 	static public Vector<Vector<String>> getInformation( String roomId) {

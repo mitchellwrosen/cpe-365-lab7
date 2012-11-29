@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.Vector;
+
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -16,14 +16,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.table.DefaultTableModel;
 
 import calpoly.DatabaseConstants;
 
 public class Occupancy {
 
 	static private JTabbedPane OccupancyTab;
-	static private JTable OccupancyTable;
+	
 	static private JTextField OccStartText;
 	static private JTextField OccStopText;
 	static private int strutSize = 15;
@@ -87,7 +86,11 @@ public class Occupancy {
 			table = new JTable(Owner.getOccupancy(date), Owner.OccupancyColV);
 			table.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
-					Action(e);
+					try {
+						Action(e);
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
 				}
 			});
 			
@@ -98,7 +101,7 @@ public class Occupancy {
 			pack();
 		}
 		/* Display detailed information about any selected reservation */
-		public void Action(MouseEvent e) {
+		public void Action(MouseEvent e) throws SQLException {
 			JTable target = (JTable)e.getSource();
 			int row = target.getSelectedRow();
 			/* Display Selected Rows detailed info */
@@ -147,14 +150,9 @@ public class Occupancy {
 		private static final long serialVersionUID = 1L;
 		private JPanel panel;
 		private JTable table;
-		private final String stop;
-		private final String start;
-		private final String roomName;
 
 		public ReservationListPopup(String roomName, String start, String stop) throws SQLException {
-			this.stop=stop;
-			this.start = start;
-			this.roomName= roomName;
+			
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
 			table = new JTable(Owner.getRoomOccupancy(start,stop,roomName),Owner.roomOccupancyColV);
@@ -205,7 +203,7 @@ public class Occupancy {
 			pack();
 
 		}
-		public ReservationDetailedPopup(String roomName, String date) {
+		public ReservationDetailedPopup(String roomName, String date) throws SQLException {
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
 			String [] data = Owner.getReservation(roomName, date);
