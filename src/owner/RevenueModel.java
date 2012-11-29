@@ -1,5 +1,7 @@
 package owner;
-
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -12,6 +14,7 @@ public class RevenueModel {
 	static public void setHandle(DatabaseHandle handle) {
 		RevenueModel.handle = handle;
 	}
+	static public final int RowSize = 14;
 	static public final String [] RevenueColName =  {"Room", "Jan.", "Feb.", "Mar.",
 		"Apr.", "May.", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.",
 		"Dec.", "Total" };
@@ -25,7 +28,7 @@ public class RevenueModel {
 		return -1;
 	}
 	static private String [] initRow(String room) { 
-		String [] str = new String[14]; /* TODO: MAGIC */
+		String [] str = new String[RowSize]; 
 		for(int i = 0; i < str.length; ++i) 
 			str[i] = "0.00";
 		str[0] = room;
@@ -33,7 +36,7 @@ public class RevenueModel {
 	}
 	static private String sumRows(String [] row) {
 		double sum = 0;
-		for( int i = 1; i < 13; ++i ) { /* TODO MAGIC */
+		for( int i = 1; i < RowSize - 1; ++i ) { 
 			sum += Double.valueOf(row[i]);
 		}
 		return String.valueOf(sum);

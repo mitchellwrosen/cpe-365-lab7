@@ -1,5 +1,7 @@
 package owner;
-
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Vector;

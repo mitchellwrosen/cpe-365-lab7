@@ -1,5 +1,7 @@
 package owner;
-
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -9,11 +11,9 @@ import java.sql.SQLException;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
 import calpoly.DatabaseHandle;
 import calpoly.OwnerPanel;

@@ -1,5 +1,9 @@
 package owner;
 
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,11 +18,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-
-import calpoly.DatabaseConstants;
 import calpoly.DatabaseHandle;
 import calpoly.OwnerPanel;
 
@@ -81,6 +82,7 @@ public class Occupancy {
 	/* For single date entries */
 	static class ReservationFrame extends JFrame {
 		private static final long serialVersionUID = 1L;
+		static final private int roomNameColPos = 0;
 		private JPanel panel;
 		private JTable table;
 		private final String date; 
@@ -110,13 +112,14 @@ public class Occupancy {
 			JTable target = (JTable)e.getSource();
 			int row = target.getSelectedRow();
 			/* Display Selected Rows detailed info */
-			new OwnerPanel.ReservationDetailedPopup((String)target.getValueAt(row, 0),date).setVisible(true); /*TODO: replace magic */
+			new OwnerPanel.ReservationDetailedPopup((String)target.getValueAt(row, roomNameColPos),date).setVisible(true);
 		}
 	}
 
 	/* For two date entries */
 	static class ReservationListFrame extends JFrame {
 		private static final long serialVersionUID = 1L;
+		static final private int roomNameColPos = 0;
 		private JPanel panel;
 		private JTable table;
 		private final String start;
@@ -143,11 +146,12 @@ public class Occupancy {
 			pack();
 
 		}
+		
 		private void Action( MouseEvent e ) throws SQLException {
 			JTable target = (JTable)e.getSource();
 			int row = target.getSelectedRow();
 			/* Display Selected rows list of reservations in that interval */
-			new OwnerPanel.ReservationListPopup((String)target.getValueAt(row, 0),start, stop).setVisible(true); /*TODO: Replace Magic Number */
+			new OwnerPanel.ReservationListPopup((String)target.getValueAt(row, roomNameColPos),start, stop).setVisible(true);
 		}
 	}
 	

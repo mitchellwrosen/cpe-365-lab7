@@ -1,5 +1,7 @@
 package calpoly;
-
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;

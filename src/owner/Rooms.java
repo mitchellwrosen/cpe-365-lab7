@@ -1,5 +1,7 @@
 package owner;
-
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -11,7 +13,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 
 import calpoly.DatabaseConstants;
@@ -102,7 +103,7 @@ public class Rooms {
 				Box hBox = Box.createHorizontalBox();
 				hBox.add(new JLabel(DatabaseConstants.ROOMS_ATTRS[i]+":"));
 				hBox.add(Box.createHorizontalStrut(strutSize));
-				hBox.add(new JLabel(data[i])); /* TODO: Implement */
+				hBox.add(new JLabel(data[i])); 
 				vBox.add(hBox);
 				vBox.add(Box.createVerticalStrut(strutSize));
 			}
@@ -113,27 +114,4 @@ public class Rooms {
 		}
 	};
 
-	public class DetailedReservationPanel extends JFrame {
-		private static final long serialVersionUID = 1L;
-		private JPanel panel;
-
-		public DetailedReservationPanel(String ID) {
-			panel = new JPanel();
-			add(panel);
-			Box vBox = Box.createVerticalBox();
-			vBox.add(Box.createVerticalStrut(strutSize));
-
-			for (String str : DatabaseConstants.RESERVATIONS_ATTRS) {
-				Box hBox = Box.createHorizontalBox();
-				hBox.add(new JLabel(str + ":"));
-				hBox.add(Box.createHorizontalStrut(strutSize));
-				hBox.add(new JLabel("N/A")); /* TODO: Implement */
-				vBox.add(hBox);
-				vBox.add(Box.createVerticalStrut(strutSize));
-			}
-			panel.add(vBox);
-			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-			pack();
-		}
-	}
 }
