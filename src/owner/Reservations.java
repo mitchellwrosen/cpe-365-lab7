@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 
 import javax.swing.Box;
 import javax.swing.JLabel;
@@ -32,7 +33,11 @@ public class Reservations {
 		Box hBox = Box.createHorizontalBox();
 		Box vBox = Box.createVerticalBox();
 
-		ReservationsTable = createReservationsTable();
+		try {
+			ReservationsTable = createReservationsTable();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 
 		ReservationRoomNameText = new JTextField();
 		ReservationRoomNameText.addActionListener(new ActionListener() {
@@ -70,19 +75,30 @@ public class Reservations {
 		return ReservationsTab;
 	}
 	static private void reservationsAction() {
-		System.out.println("User Input->"+ReservationRoomNameText.getText() +" "
-				+ ReservationStartText.getText() +" "
-				+ ReservationStopText.getText());
+		String room = ReservationRoomNameText.getText();
+		String start = ReservationStartText.getText();
+		String stop = ReservationStopText.getText();
+		System.out.println("User Input->"+room +" "+ start +" "+ stop);
+		try {
+			model.setDataVector(ReservationModel.getReservations(start,stop,room), ReservationModel.ReservationColNameV);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	static private JTable createReservationsTable() {
+	static private JTable createReservationsTable() throws SQLException {
 		model = new DefaultTableModel(ReservationModel.getReservations("","",""),ReservationModel.ReservationColNameV);
 		JTable ret = new JTable(model);
 		ret.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {
 				JTable target = (JTable)e.getSource();
 				int row = target.getSelectedRow();
-				//new OwnerPanel.DetailedReservationPanel("3").setVisible(true);
+				String name = (String)target.getValueAt(row, 0); /*TODO: MAGIC */
+				try {
+					new OwnerPanel.ReservationDetailedPopup(name).setVisible(true);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		return ret;

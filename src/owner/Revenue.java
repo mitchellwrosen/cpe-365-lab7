@@ -28,17 +28,29 @@ public class Revenue {
 		Box vBox = Box.createVerticalBox();
 
 		RevenueTab = new JTabbedPane();
-		RevenueTable = createRevenueTable();
+		try {
+			RevenueTable = createRevenueTable();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 		RevenueReservationsButton = new JButton("Reservations");
 		RevenueReservationsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				RevenueReservationsAction();
+				try {
+					RevenueReservationsAction();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		RevenueOccupiedButton = new JButton("Days Occupied");
 		RevenueOccupiedButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				RevenueOccupiedAction();
+				try {
+					RevenueOccupiedAction();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		RevenueRevenueButton = new JButton("Monthly Revenue");
@@ -71,24 +83,24 @@ public class Revenue {
 		UpdateRevenue();
 	}
 
-	static private void RevenueOccupiedAction() {
+	static private void RevenueOccupiedAction() throws SQLException {
 		System.out.println("Revenue->Occupied Pressed");
 		UpdateOccupied();
 	}
 
-	static private void RevenueReservationsAction() {
+	static private void RevenueReservationsAction() throws SQLException {
 		System.out.println("Revenue->Reservations Pressed");
 		UpdateReservations();
 	}
 
-	static private JTable createRevenueTable() {
+	static private JTable createRevenueTable() throws SQLException {
 		model = new DefaultTableModel(RevenueModel.getMonthlyRevenueReservations(), RevenueModel.RevenueColNameV);
 		return new JTable(model);
 	}
-	static private void UpdateReservations() {
+	static private void UpdateReservations() throws SQLException {
 		model.setDataVector(RevenueModel.getMonthlyRevenueReservations(), RevenueModel.RevenueColNameV);
 	}
-	static private void UpdateOccupied() {
+	static private void UpdateOccupied() throws SQLException {
 		model.setDataVector(RevenueModel.getMonthlyDaysOccupied(), RevenueModel.RevenueColNameV);
 	}
 	static private void UpdateRevenue() throws SQLException {

@@ -34,23 +34,12 @@ public class RevenueModel {
 	static private String sumRows(String [] row) {
 		double sum = 0;
 		for( int i = 1; i < 13; ++i ) { /* TODO MAGIC */
-			sum += Integer.parseInt(row[i]);
+			sum += Double.valueOf(row[i]);
 		}
 		return String.valueOf(sum);
 	}
 	static final public Vector<String> RevenueColNameV = new Vector<String>(Arrays.asList(RevenueColName));
-	static public Vector<Vector<String>> getMonthlyRevenueReservations() {
-		Vector<Vector<String>> ret = new Vector<Vector<String>>();
-		String [] junk = {"Awesome Room","1","1","1","1","1","1","1","1","1","1","1","1","12"};
-		ret.add( new Vector<String>(Arrays.asList(junk)));	
-		return ret;
-	}
-	static public Vector<Vector<String>> getMonthlyDaysOccupied() {
-		Vector<Vector<String>> ret = new Vector<Vector<String>>();
-		String [] junk = {"Awesome Room","2","2","2","2","2","2","2","2","2","2","2","2","24"};
-		ret.add( new Vector<String>(Arrays.asList(junk)));	
-		return ret;
-	}
+	
 	static public Vector<Vector<String>> getMonthly(String ColName, String query ) throws SQLException {
 		ResultSet res = handle.executeQuery(query);
 		Vector<Vector<String>> ret = new Vector<Vector<String>>();
@@ -73,9 +62,9 @@ public class RevenueModel {
 					row = initRow(room);
 				}
 				
-				row[getMonPosition(mon)] = rev;
+				row[getMonPosition(mon)+1] = rev;
 			}
-			
+			f = res.next();
 		}
 		return ret;
 		
@@ -87,5 +76,21 @@ public class RevenueModel {
 			  	"GROUP BY Name, TO_CHAR(CheckInDate,'MON') "+
 			  	"ORDER BY Name";
 		return getMonthly("REVENUE",query);
+	}
+	static public Vector<Vector<String>> getMonthlyRevenueReservations() throws SQLException {
+		String query = "SELECT Name, TO_CHAR(CheckInDate,'MON') MONTH, COUNT(*) RESERVATIONS "+
+				"FROM Reservations RE, Rooms RO "+
+			    "WHERE RE.RoomId=RO.Id "+
+			  	"GROUP BY Name, TO_CHAR(CheckInDate,'MON') "+
+			  	"ORDER BY Name";
+		return getMonthly("RESERVATIONS",query);
+	}
+	static public Vector<Vector<String>> getMonthlyDaysOccupied() throws SQLException {
+		String query = "SELECT Name, TO_CHAR(CheckInDate,'MON') MONTH, SUM(CheckOutDate-CheckInDate) OCCUPIED "+
+				"FROM Reservations RE, Rooms RO "+
+			    "WHERE RE.RoomId=RO.Id "+
+			  	"GROUP BY Name, TO_CHAR(CheckInDate,'MON') "+
+			  	"ORDER BY Name";
+		return getMonthly("OCCUPIED",query);
 	}
 }

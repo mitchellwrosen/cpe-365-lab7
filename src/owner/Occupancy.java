@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 
 import calpoly.DatabaseConstants;
 import calpoly.DatabaseHandle;
+import calpoly.OwnerPanel;
 
 public class Occupancy {
 
@@ -107,7 +108,7 @@ public class Occupancy {
 			JTable target = (JTable)e.getSource();
 			int row = target.getSelectedRow();
 			/* Display Selected Rows detailed info */
-			new ReservationDetailedPopup((String)target.getValueAt(row, 0),date).setVisible(true); /*TODO: replace magic */
+			new OwnerPanel.ReservationDetailedPopup((String)target.getValueAt(row, 0),date).setVisible(true); /*TODO: replace magic */
 		}
 	}
 
@@ -144,84 +145,10 @@ public class Occupancy {
 			JTable target = (JTable)e.getSource();
 			int row = target.getSelectedRow();
 			/* Display Selected rows list of reservations in that interval */
-			new ReservationListPopup((String)target.getValueAt(row, 0),start, stop).setVisible(true); /*TODO: Replace Magic Number */
+			new OwnerPanel.ReservationListPopup((String)target.getValueAt(row, 0),start, stop).setVisible(true); /*TODO: Replace Magic Number */
 		}
 	}
-	/* Popups up when row selected from Reservation List Frame */
-	static class ReservationListPopup extends JFrame {
-		private static final long serialVersionUID = 1L;
-		private JPanel panel;
-		private JTable table;
-
-		public ReservationListPopup(String roomName, String start, String stop) throws SQLException {
-			
-			panel = new JPanel();
-			Box vBox = Box.createVerticalBox();
-			table = new JTable(OccupancyModel.getRoomOccupancy(start,stop,roomName),OccupancyModel.roomOccupancyColV);
-			table.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					try {
-						Action(e);
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
-				}
-			});
-			vBox.add(new JScrollPane(table));
-			panel.add(vBox);
-			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-			this.add(panel);
-			pack();
-
-		}
-		public void Action(MouseEvent e) throws SQLException {
-			JTable target = (JTable)e.getSource();
-			int row = target.getSelectedRow();
-			/* Display Selected Rows detailed info */
-			new ReservationDetailedPopup((String)target.getValueAt(row, 0)).setVisible(true);
-		}
-	}
-
-	/* for detailed reservation information */
-	static class ReservationDetailedPopup extends JFrame {
-		private static final long serialVersionUID = 1L;
-		private JPanel panel;
 	
-		public ReservationDetailedPopup(String rsvID) throws SQLException {
-			panel = new JPanel();
-			Box vBox = Box.createVerticalBox();
-			String [] data = OccupancyModel.getReservation(rsvID);
-			for( int i = 0; i < data.length; ++i) {
-				Box hBox = Box.createHorizontalBox();
-				hBox.add(new JLabel(DatabaseConstants.RESERVATIONS_ATTRS[i]));
-				hBox.add(Box.createHorizontalStrut(strutSize));
-				hBox.add(new JLabel(data[i]));
-				vBox.add(hBox);
-			}
-			
-			panel.add(vBox);
-			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-			this.add(panel);
-			pack();
 
-		}
-		public ReservationDetailedPopup(String roomName, String date) throws SQLException {
-			panel = new JPanel();
-			Box vBox = Box.createVerticalBox();
-			String [] data = OccupancyModel.getReservation(roomName, date);
-			for( int i = 0; i < data.length; ++i) {
-				Box hBox = Box.createHorizontalBox();
-				hBox.add(new JLabel(DatabaseConstants.RESERVATIONS_ATTRS[i]));
-				hBox.add(Box.createHorizontalStrut(strutSize));
-				hBox.add(new JLabel(data[i]));
-				vBox.add(hBox);
-			}
-			
-			panel.add(vBox);
-			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-			this.add(panel);
-			pack();
-
-		}
-	}
+	
 }

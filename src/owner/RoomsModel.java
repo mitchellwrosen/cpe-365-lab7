@@ -1,5 +1,6 @@
 package owner;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -15,20 +16,17 @@ public class RoomsModel {
 	}
 	static public final String [] roomsCol = {"Room Name"}; 
 	static final public Vector<String> roomsColV = new Vector<String>(Arrays.asList(roomsCol));
-	static public Vector<Vector<String>> getRooms() {
-		Vector<Vector<String>> ret = new Vector<Vector<String>>();
-		String [] junk = {"Awesome Room"};
-		ret.add( new Vector<String>(Arrays.asList(junk)));	
-		return ret;
+	static public Vector<Vector<String>> getRooms() throws SQLException {
+		String query = "SELECT name FROM Rooms";
+		return OwnerModel.resToTable(handle.executeQuery(query));
 	}
 	
 	
 	
 	static final public Vector<String> DCroomCols = new Vector<String>(Arrays.asList(DatabaseConstants.ROOMS_ATTRS));
-	static public Vector<Vector<String>> getInformation( String roomId) {
-		Vector<Vector<String>> ret = new Vector<Vector<String>>();
-		String [] junk = {"12C","Awesome Room","2","Queen","3","5.50","Stupid-like"};
-		ret.add( new Vector<String>(Arrays.asList(junk)));	
-		return ret;
+	static public String [] getInformation( String roomName) throws SQLException {
+		String query = "SELECT * FROM Rooms WHERE name='"+roomName+"'";
+		
+		return OwnerModel.resToArray(handle.executeQuery(query));
 	}
 }
