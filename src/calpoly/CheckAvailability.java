@@ -12,7 +12,7 @@ public class CheckAvailability extends javax.swing.JDialog
 {
     GuestPanel guestPanel;
     /**
-     * Creates new form CheckAvailability
+     * Creates new form CheckAvailability 
      */
     public CheckAvailability(java.awt.Frame parent, boolean modal, GuestPanel panel)
     {
