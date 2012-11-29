@@ -108,7 +108,7 @@ public class Rooms {
 				vBox.add(Box.createVerticalStrut(strutSize));
 			}
 			panel.add(vBox);
-
+			this.setTitle(roomName);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 			pack();
 		}

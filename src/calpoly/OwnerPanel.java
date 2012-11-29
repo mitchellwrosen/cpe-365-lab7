@@ -65,6 +65,7 @@ public class OwnerPanel extends JPanel {
 					}
 				}
 			});
+			this.setTitle(roomName+" "+start+" - "+stop );
 			vBox.add(new JScrollPane(table));
 			panel.add(vBox);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -95,7 +96,7 @@ public class OwnerPanel extends JPanel {
 				hBox.add(new JLabel(data[i]));
 				vBox.add(hBox);
 			}
-			
+			this.setTitle(rsvID);
 			panel.add(vBox);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 			this.add(panel);
@@ -117,6 +118,7 @@ public class OwnerPanel extends JPanel {
 			panel.add(vBox);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 			this.add(panel);
+			this.setTitle(roomName + " " + date);
 			pack();
 
 		}

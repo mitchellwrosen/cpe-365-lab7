@@ -100,7 +100,7 @@ public class Occupancy {
 					}
 				}
 			});
-			
+			this.setTitle(date);
 			vBox.add(new JScrollPane(table));
 			panel.add(vBox);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -139,6 +139,7 @@ public class Occupancy {
 					}
 				}
 			});
+			this.setTitle(start+" - "+stop);
 			vBox.add(new JScrollPane(table));
 			panel.add(vBox);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
