@@ -11,7 +11,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
+import calpoly.DatabaseHandle;
 import calpoly.OwnerPanel;
 
 public class Reservations {
@@ -20,9 +23,11 @@ public class Reservations {
 	static private JTextField ReservationStartText;
 	static private JTextField ReservationStopText;
 	static private JTable ReservationsTable;
+	static private DefaultTableModel model;
 	static private final int strutSize = 15;
 	
-	public static JTabbedPane createReservationsTab() {
+	public static JTabbedPane createReservationsTab(DatabaseHandle handle) {
+		ReservationModel.setHandle(handle);
 		ReservationsTab = new JTabbedPane();
 		Box hBox = Box.createHorizontalBox();
 		Box vBox = Box.createVerticalBox();
@@ -71,7 +76,8 @@ public class Reservations {
 	}
 	
 	static private JTable createReservationsTable() {
-		JTable ret = new JTable(Owner.getReservations("","",""),Owner.ReservationColNameV);
+		model = new DefaultTableModel(ReservationModel.getReservations("","",""),ReservationModel.ReservationColNameV);
+		JTable ret = new JTable(model);
 		ret.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {
 				JTable target = (JTable)e.getSource();
@@ -81,5 +87,6 @@ public class Reservations {
 		});
 		return ret;
 	}
-
+	
+	
 }

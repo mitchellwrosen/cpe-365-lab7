@@ -18,6 +18,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import calpoly.DatabaseConstants;
+import calpoly.DatabaseHandle;
 
 public class Occupancy {
 
@@ -27,9 +28,10 @@ public class Occupancy {
 	static private JTextField OccStopText;
 	static private int strutSize = 15;
 
-	static public JTabbedPane createOccupancyTab() {
+	static public JTabbedPane createOccupancyTab(DatabaseHandle handle) {
 		Box vBox = Box.createVerticalBox();
 		Box hBox = Box.createHorizontalBox();
+		OccupancyModel.setHandle(handle);
 
 		OccStartText = new JTextField();
 		OccStartText.addActionListener(new ActionListener() {
@@ -83,7 +85,7 @@ public class Occupancy {
 			this.date=date;
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
-			table = new JTable(Owner.getOccupancy(date), Owner.OccupancyColV);
+			table = new JTable(OccupancyModel.getOccupancy(date), OccupancyModel.OccupancyColV);
 			table.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					try {
@@ -121,7 +123,7 @@ public class Occupancy {
 			this.stop=stop;
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
-			table = new JTable(Owner.getOccupancy(start, stop), Owner.OccupancyColV);
+			table = new JTable(OccupancyModel.getOccupancy(start, stop), OccupancyModel.OccupancyColV);
 			table.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					try {
@@ -155,7 +157,7 @@ public class Occupancy {
 			
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
-			table = new JTable(Owner.getRoomOccupancy(start,stop,roomName),Owner.roomOccupancyColV);
+			table = new JTable(OccupancyModel.getRoomOccupancy(start,stop,roomName),OccupancyModel.roomOccupancyColV);
 			table.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					try {
@@ -188,7 +190,7 @@ public class Occupancy {
 		public ReservationDetailedPopup(String rsvID) throws SQLException {
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
-			String [] data = Owner.getReservation(rsvID);
+			String [] data = OccupancyModel.getReservation(rsvID);
 			for( int i = 0; i < data.length; ++i) {
 				Box hBox = Box.createHorizontalBox();
 				hBox.add(new JLabel(DatabaseConstants.RESERVATIONS_ATTRS[i]));
@@ -206,7 +208,7 @@ public class Occupancy {
 		public ReservationDetailedPopup(String roomName, String date) throws SQLException {
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
-			String [] data = Owner.getReservation(roomName, date);
+			String [] data = OccupancyModel.getReservation(roomName, date);
 			for( int i = 0; i < data.length; ++i) {
 				Box hBox = Box.createHorizontalBox();
 				hBox.add(new JLabel(DatabaseConstants.RESERVATIONS_ATTRS[i]));

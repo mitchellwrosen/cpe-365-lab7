@@ -14,6 +14,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 
 import calpoly.DatabaseConstants;
+import calpoly.DatabaseHandle;
 
 public class Rooms {
 	static private JTabbedPane RoomsTab;
@@ -22,7 +23,8 @@ public class Rooms {
 	static private JTable RoomsTable;
 	static private final int strutSize = 15;
 
-	public static JTabbedPane createRoomsTab() {
+	public static JTabbedPane createRoomsTab(DatabaseHandle handle) {
+		RoomsModel.setHandle(handle);
 		Box hBox = Box.createHorizontalBox();
 		Box vBox = Box.createVerticalBox();
 
@@ -68,7 +70,7 @@ public class Rooms {
 	}
 
 	static private JTable createRoomsTable() {
-		return new JTable(Owner.getRooms(), Owner.roomsColV);
+		return new JTable(RoomsModel.getRooms(), RoomsModel.roomsColV);
 	}
 
 	private class RoomInfoPanel extends JFrame {
