@@ -19,18 +19,27 @@ public class Owner {
 	static public Vector<Vector<String>> resToTable(ResultSet res) throws SQLException {
 		boolean f = res.next();
 		Vector<Vector<String>> vStr = new Vector<Vector<String>>();
-	System.out.println(res.getMetaData().getColumnCount());
 		while(f) {
 			Vector<String> row = new Vector<String>();
 			for(int i = 1; i <= res.getMetaData().getColumnCount(); ++i) {
-				System.out.print(res.getString(i)+" ");
+				
 				row.add(res.getString(i));
 			}
 			vStr.add(row);
 			f= res.next();
-			System.out.println();
 		}
 		return vStr;
+	}
+	static public String [] resToArray(ResultSet res) throws SQLException {
+		Vector<String> ret = new Vector<String>();
+		boolean f = res.next();
+		while(f) {
+			for(int i = 1; i <= res.getMetaData().getColumnCount(); ++i) {
+				ret.add(res.getString(i));
+			}
+			f= res.next();
+		}
+		return (String[]) ret.toArray(new String[ret.size()]);
 	}
 	/*
 	 * OR-1 OCCUPANCY OVERVIEW
@@ -85,13 +94,17 @@ public class Owner {
 		
 		return resToTable(handle.executeQuery(query));
 	}
-	static final public String [] roomOccupancyCol =  { "Reservation", "Last Name", "CheckInDate","CheckOutDate" };
+	static final public String [] roomOccupancyCol =  { "Reservation", "CheckInDate","CheckOutDate", "Last Name" };
 	static final public Vector<String> roomOccupancyColV = new Vector<String>(Arrays.asList(roomOccupancyCol));
-	static public Vector<Vector<String>> getRoomOccupancy( String start, String end, String roomId) {
-		Vector<Vector<String>> ret = new Vector<Vector<String>>();
-		String [] s = {"1","Occupied","03-MAR-2010","05-MAR-2010"};
-		ret.add( new Vector<String>(Arrays.asList(s)));	
-		return ret;
+	static public Vector<Vector<String>> getRoomOccupancy( String start, String end, String roomName) throws SQLException {
+		String query = "SELECT Code, CheckInDate, CheckOutDate, LastName" +
+					   " FROM Reservations RE, Rooms RO"+
+					   " WHERE RE.RoomId=RO.Id "+
+					   " AND RO.name='"+roomName+"' "+
+					   " AND CheckInDate<='"+end+"'"+
+					   " AND CheckOutDate>'"+start+"'";
+		
+		return resToTable(handle.executeQuery(query));
 	}
 	static public final String [] RevenueColName =  {"Room", "Jan.", "Feb.", "Mar.",
 		"Apr.", "May.", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.",
@@ -138,11 +151,17 @@ public class Owner {
 		return ret;
 	}
 	static final public Vector<String> DCreservationCols = new Vector<String>(Arrays.asList(DatabaseConstants.RESERVATIONS_ATTRS));
-	static public Vector<Vector<String>> getReservation( String reservationId) {
+	static public String [] getReservation( String reservationId) throws SQLException {
+		String query = "SELECT * FROM Reservations RE" +
+					   " WHERE Code='"+reservationId+"'";
+		return resToArray(handle.executeQuery(query));
+	}
+	
+	static public String [] getReservation( String roomName, String date) {
 		Vector<Vector<String>> ret = new Vector<Vector<String>>();
 		String [] junk = {"222","12C","03-MAR-2010","05-MAR-2010","5.50","Hanks","Tom","2","3"};
-		ret.add( new Vector<String>(Arrays.asList(junk)));	
-		return ret;
+			
+		return junk;
 	}
 	static final public Vector<String> DCroomCols = new Vector<String>(Arrays.asList(DatabaseConstants.ROOMS_ATTRS));
 	static public Vector<Vector<String>> getInformation( String roomId) {
