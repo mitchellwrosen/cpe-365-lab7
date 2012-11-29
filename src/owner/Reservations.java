@@ -19,7 +19,6 @@ import calpoly.DatabaseHandle;
 import calpoly.OwnerPanel;
 
 public class Reservations {
-	static private JTabbedPane ReservationsTab;
 	static private JTextField ReservationRoomNameText;
 	static private JTextField ReservationStartText;
 	static private JTextField ReservationStopText;
@@ -27,9 +26,9 @@ public class Reservations {
 	static private DefaultTableModel model;
 	static private final int strutSize = 15;
 	
-	public static JTabbedPane createReservationsTab(DatabaseHandle handle) {
+	public static Box createReservationsTab(DatabaseHandle handle) {
 		ReservationModel.setHandle(handle);
-		ReservationsTab = new JTabbedPane();
+		
 		Box hBox = Box.createHorizontalBox();
 		Box vBox = Box.createVerticalBox();
 
@@ -70,9 +69,9 @@ public class Reservations {
 		vBox.add(hBox);
 		vBox.add(Box.createVerticalStrut(strutSize));
 		vBox.add(new JScrollPane(ReservationsTable));
-		ReservationsTab.add(vBox);
+		
 
-		return ReservationsTab;
+		return vBox;
 	}
 	static private void reservationsAction() {
 		String room = ReservationRoomNameText.getText();

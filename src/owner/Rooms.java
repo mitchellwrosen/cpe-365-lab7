@@ -19,13 +19,12 @@ import calpoly.DatabaseHandle;
 import calpoly.OwnerPanel;
 
 public class Rooms {
-	static private JTabbedPane RoomsTab;
 	static private JButton RoomsInformationButton;
 	static private JButton RoomsReservationsButton;
 	static private JTable RoomsTable;
 	static private final int strutSize = 15;
 
-	public static JTabbedPane createRoomsTab(DatabaseHandle handle) {
+	public static Box createRoomsTab(DatabaseHandle handle) {
 		RoomsModel.setHandle(handle);
 		Box hBox = Box.createHorizontalBox();
 		Box vBox = Box.createVerticalBox();
@@ -35,7 +34,6 @@ public class Rooms {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		RoomsTab = new JTabbedPane();
 		RoomsInformationButton = new JButton("Information");
 		RoomsInformationButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -67,9 +65,7 @@ public class Rooms {
 		vBox.add(Box.createVerticalStrut(strutSize));
 		vBox.add(new JScrollPane(RoomsTable));
 
-		RoomsTab.add(vBox);
-
-		return RoomsTab;
+		return vBox;
 	}
 
 	static private void RoomsInformationAction(ActionEvent evt) throws SQLException {

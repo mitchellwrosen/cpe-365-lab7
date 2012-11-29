@@ -14,7 +14,6 @@ import javax.swing.table.DefaultTableModel;
 import calpoly.DatabaseHandle;
 
 public class Revenue {
-	static private JTabbedPane RevenueTab;
 	static private JButton RevenueRevenueButton;
 	static private JButton RevenueReservationsButton;
 	static private JButton RevenueOccupiedButton;
@@ -22,12 +21,11 @@ public class Revenue {
 	static private DefaultTableModel model;
 	static private final int strutSize = 15;
 
-	public static JTabbedPane createRevenueTab(DatabaseHandle handle) {
+	public static Box createRevenueTab(DatabaseHandle handle) {
 		RevenueModel.setHandle(handle);
 		Box hBox = Box.createHorizontalBox();
 		Box vBox = Box.createVerticalBox();
 
-		RevenueTab = new JTabbedPane();
 		try {
 			RevenueTable = createRevenueTable();
 		} catch (SQLException e1) {
@@ -74,8 +72,7 @@ public class Revenue {
 		vBox.add(hBox);
 		vBox.add(Box.createVerticalStrut(strutSize));
 		vBox.add(new JScrollPane(RevenueTable));
-		RevenueTab.add(vBox);
-		return RevenueTab;
+		return vBox;
 	}
 
 	static private void RevenueRevenueAction() throws SQLException {

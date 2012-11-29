@@ -31,6 +31,7 @@ public class OwnerPanel extends JPanel {
 		this.handle = handle;
 		OwnerModel.setHandle(handle);
 		createOwnerTabs();
+		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 	}
 
 	private void createOwnerTabs() {
@@ -39,6 +40,7 @@ public class OwnerPanel extends JPanel {
 		ownerTabs.addTab("Revenue", Revenue.createRevenueTab(handle));
 		ownerTabs.addTab("Reservations", Reservations.createReservationsTab(handle));
 		ownerTabs.addTab("Rooms", Rooms.createRoomsTab(handle));
+		
 		this.add(ownerTabs);
 	}
 	/* Popups up when row selected from Reservation List Frame */

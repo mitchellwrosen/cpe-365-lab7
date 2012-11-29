@@ -1,5 +1,6 @@
 package owner;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -23,24 +24,26 @@ import calpoly.OwnerPanel;
 
 public class Occupancy {
 
-	static private JTabbedPane OccupancyTab;
 	
 	static private JTextField OccStartText;
 	static private JTextField OccStopText;
 	static private int strutSize = 15;
-
-	static public JTabbedPane createOccupancyTab(DatabaseHandle handle) {
+	static private final double MaxComponentHeight = 1.9;
+	static private final int MaxComponentWidth = 120;
+	static public Box createOccupancyTab(DatabaseHandle handle) {
 		Box vBox = Box.createVerticalBox();
 		Box hBox = Box.createHorizontalBox();
 		OccupancyModel.setHandle(handle);
 
 		OccStartText = new JTextField();
+		OccStartText.setMaximumSize(new Dimension(MaxComponentWidth,(int)(MaxComponentHeight*OccStartText.getFont().getSize())));
 		OccStartText.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				occupancyAction();
 			}
 		});
 		OccStopText = new JTextField();
+		OccStopText.setMaximumSize(new Dimension(MaxComponentWidth,(int)(MaxComponentHeight*OccStopText.getFont().getSize())));
 		OccStopText.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				occupancyAction();
@@ -56,9 +59,8 @@ public class Occupancy {
 
 		vBox.add(hBox);
 		vBox.add(Box.createVerticalStrut(strutSize));
-		OccupancyTab = new JTabbedPane();
-		OccupancyTab.add(vBox);
-		return OccupancyTab;
+		
+		return vBox;
 	}
 
 	static private void occupancyAction() {
