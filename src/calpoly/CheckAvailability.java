@@ -1,11 +1,8 @@
 package calpoly;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -114,25 +111,11 @@ public class CheckAvailability extends javax.swing.JDialog
         return true;
     }
     
-    double truncateDouble(double number)
-    {
-        double result = number;
-        String arg = "" + number;
-        int idx = arg.indexOf('.');
-        if (idx!=-1) {
-            if (arg.length() > idx+2) {
-                arg = arg.substring(0,idx+2+1);
-                result  = Double.parseDouble(arg);
-            }
-        }
-        return result;
-    }
-    
     private double getRate()
     {
         Calendar c = Calendar.getInstance();
         int dayOfWeek, dayOfMonth;
-        c.set(checkYear, checkMon, checkDay);
+        c.set(checkYear, checkMon-1, checkDay);
         dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
         dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
         
@@ -141,7 +124,7 @@ public class CheckAvailability extends javax.swing.JDialog
         {
             if (guestPanel.getPrice() * 1.25 > highestRate)
             {
-                highestRate = truncateDouble(guestPanel.getPrice() * 1.25);
+                highestRate = guestPanel.truncateDouble(guestPanel.getPrice() * 1.25);
             }
             return (guestPanel.getPrice() * 1.25);
         }
@@ -151,7 +134,7 @@ public class CheckAvailability extends javax.swing.JDialog
         {
             if (guestPanel.getPrice() * 1.1 > highestRate)
             {
-                highestRate = truncateDouble(guestPanel.getPrice() * 1.1);
+                highestRate = guestPanel.truncateDouble(guestPanel.getPrice() * 1.1);
             }
             return (guestPanel.getPrice() * 1.1);
         }
@@ -267,6 +250,7 @@ public class CheckAvailability extends javax.swing.JDialog
         dateTable.getColumnModel().getColumn(2).setResizable(false);
 
         reservationButton.setText("Place Reservation!");
+        reservationButton.setEnabled(false);
         reservationButton.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -359,10 +343,11 @@ public class CheckAvailability extends javax.swing.JDialog
                             .addComponent(jLabel3)
                             .addComponent(checkInMonthSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(checkInDaySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(validDatesLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(validDatesLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel4)
+                                .addComponent(checkInDaySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
@@ -471,14 +456,14 @@ public class CheckAvailability extends javax.swing.JDialog
                 if (resultSet.next())                
                 {
                     model.addRow(new Object[]{checkMon + "/" + checkDay + "/"+ checkYear,
-                        "Occupied", ""});
+                        "Occupied", 0});
                     setReservation = false;
                 }
                 //Open
                 else
-                {   
+                {
                     model.addRow(new Object[]{checkMon + "/" + checkDay + "/"+ checkYear,
-                        "Available", truncateDouble(getRate())});
+                        "Available", guestPanel.truncateDouble(getRate())});
                 }
             }
             catch (SQLException ex)
@@ -501,7 +486,9 @@ public class CheckAvailability extends javax.swing.JDialog
 
     private void reservationButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_reservationButtonActionPerformed
     {//GEN-HEADEREND:event_reservationButtonActionPerformed
-        CompleteReservation reservation = new CompleteReservation(null, false, guestPanel);
+        guestPanel.setRate(highestRate);
+        guestPanel.setRoom(guestPanel.getAvailableRoom());
+        CompleteReservation reservation = new CompleteReservation(null, true, guestPanel);
         reservation.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_reservationButtonActionPerformed
