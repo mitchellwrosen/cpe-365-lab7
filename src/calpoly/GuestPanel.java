@@ -39,13 +39,43 @@ public class GuestPanel extends JPanel
       
       initComponents();
     }
+    
+    protected int getCheckInMonth()
+    {
+        return checkInMonth;
+    }
+    
+    protected int getCheckOutMonth()
+    {
+        return checkOutMonth;
+    }
+    
+    protected int getCheckInDay()
+    {
+        return checkInDay;
+    }
+    
+    protected int getCheckOutDay()
+    {
+        return checkOutDay;
+    }
+    
+    protected int getCheckInYear()
+    {
+        return checkInYear;
+    }
+    
+    protected int getCheckOutYear()
+    {
+        return checkOutYear;
+    }
 
     protected DatabaseHandle getHandle()
     {
         return handle;
     }
     
-    protected String getRoomId()
+    protected String getRoomIdLabel()
     {
         return roomCodeLabel.getText();
     }
@@ -68,6 +98,11 @@ public class GuestPanel extends JPanel
     protected void setRate(double newRate)
     {
         rate = newRate;
+    }
+    
+    protected double getRate()
+    {
+        return rate;
     }
     
     protected double getPrice()
@@ -171,7 +206,7 @@ public class GuestPanel extends JPanel
         return result;
     }
     
-    private double getRate(double basePrice)
+    private double calculateRate(double basePrice)
     {
         rate = 0;
         Calendar c = Calendar.getInstance();
@@ -637,6 +672,7 @@ public class GuestPanel extends JPanel
         
         CompleteReservation reservation = new CompleteReservation(null, true, this);
         reservation.setVisible(true);
+        reservationButton.setEnabled(false);
     }//GEN-LAST:event_reservationButtonActionPerformed
 
     private void roomComboBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_roomComboBoxActionPerformed
@@ -707,17 +743,17 @@ public class GuestPanel extends JPanel
                     "SELECT R.Name, R.Price from Rooms R, Reservations Res " + 
                     "where Res.RoomId = R.Id " + 
                     "AND (" + 
-                    "(Res.CheckInDate > " + checkInDate + "AND Res.CheckOutDate < " + checkOutDate + ")"
+                    "(Res.CheckInDate >= " + checkInDate + "AND Res.CheckOutDate <= " + checkOutDate + ")"
                     + "OR (Res.CheckInDate < " + checkInDate + "AND Res.CheckOutDate > " + checkOutDate + ")"
-                    + "OR (Res.CheckInDate < " + checkInDate + "AND Res.CheckOutDate < " + checkOutDate + " AND Res.CheckOutDate > " + checkInDate + ")"
-                    + "OR (Res.CheckInDate > " + checkInDate + "AND Res.CheckOutDate > " + checkOutDate + " AND Res.CheckInDate < " + checkOutDate + ")"
+                    + "OR (Res.CheckInDate <= " + checkInDate + "AND Res.CheckOutDate <= " + checkOutDate + " AND Res.CheckOutDate > " + checkInDate + ")"
+                    + "OR (Res.CheckInDate >= " + checkInDate + "AND Res.CheckOutDate >= " + checkOutDate + " AND Res.CheckInDate < " + checkOutDate + ")"
                     + ")" +
                     " GROUP BY R.Name, R.Price)"
                 ));
         
         try
         {
-            //The occupied rooms for the duration of the selected period
+            //The free rooms for the duration of the selected period
             while (resultSet.next())
             {
                 freeRooms.add(resultSet.getString("Name"));
@@ -731,7 +767,9 @@ public class GuestPanel extends JPanel
         
         for(int i = 0; i < freeRooms.size(); i++)
         {
-            model.addRow(new Object[] {freeRooms.get(i), roomRate.get(i)});
+            rate = calculateRate(roomRate.get(i));
+            roomRate.set(i, rate);
+            model.addRow(new Object[] {freeRooms.get(i), rate});
         }
         
         if(setReservation)

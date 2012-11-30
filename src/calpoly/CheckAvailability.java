@@ -444,11 +444,11 @@ public class CheckAvailability extends javax.swing.JDialog
             ResultSet resultSet =
                     handle.executeQuery(("SELECT * from Rooms R, Reservations Res " + 
                                         "where Res.RoomId = R.Id " + 
-                                        "AND Res.CheckInDate < " + 
+                                        "AND Res.CheckInDate <= " + 
                                         curDate + 
                                         "AND Res.CheckOutDate > " + 
                                         curDate + 
-                                        "AND R.Id = '" + guestPanel.getRoomId() + "'"
+                                        "AND R.Id = '" + guestPanel.getRoomIdLabel() + "'"
                                         ));
             try
             {
@@ -488,6 +488,7 @@ public class CheckAvailability extends javax.swing.JDialog
     {//GEN-HEADEREND:event_reservationButtonActionPerformed
         guestPanel.setRate(highestRate);
         guestPanel.setRoom(guestPanel.getAvailableRoom());
+        
         CompleteReservation reservation = new CompleteReservation(null, true, guestPanel);
         reservation.setVisible(true);
         this.dispose();
