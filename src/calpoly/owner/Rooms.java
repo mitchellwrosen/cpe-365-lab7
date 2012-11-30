@@ -1,4 +1,4 @@
-package owner;
+package calpoly.owner;
 /* 
  * @author Matthew Tondreau (mmtondre) 
  */
@@ -26,7 +26,7 @@ public class Rooms {
 	static private final int strutSize = 15;
 
 	public static Box createRoomsTab(DatabaseHandle handle) {
-		RoomsModel.setHandle(handle);
+		RoomsController.setHandle(handle);
 		Box hBox = Box.createHorizontalBox();
 		Box vBox = Box.createVerticalBox();
 
@@ -85,7 +85,7 @@ public class Rooms {
 	}
 
 	static private JTable createRoomsTable() throws SQLException {
-		return new JTable(RoomsModel.getRooms(), RoomsModel.roomsColV);
+		return new JTable(RoomsController.getRooms(), RoomsController.roomsColV);
 	}
 
 	static public class RoomInfoPanel extends JFrame {
@@ -98,7 +98,7 @@ public class Rooms {
 			add(panel);
 			Box vBox = Box.createVerticalBox();
 			vBox.add(Box.createVerticalStrut(strutSize));
-			String [] data = RoomsModel.getInformation(roomName);
+			String [] data = RoomsController.getInformation(roomName);
 			for (int i = 0; i <data.length; ++i) {
 				Box hBox = Box.createHorizontalBox();
 				hBox.add(new JLabel(DatabaseConstants.ROOMS_ATTRS[i]+":"));

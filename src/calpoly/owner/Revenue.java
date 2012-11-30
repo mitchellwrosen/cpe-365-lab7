@@ -1,4 +1,4 @@
-package owner;
+package calpoly.owner;
 /* 
  * @author Matthew Tondreau (mmtondre) 
  */
@@ -23,7 +23,7 @@ public class Revenue {
 	static private final int strutSize = 15;
 
 	public static Box createRevenueTab(DatabaseHandle handle) {
-		RevenueModel.setHandle(handle);
+		RevenueController.setHandle(handle);
 		Box hBox = Box.createHorizontalBox();
 		Box vBox = Box.createVerticalBox();
 
@@ -92,17 +92,17 @@ public class Revenue {
 	}
 
 	static private JTable createRevenueTable() throws SQLException {
-		model = new DefaultTableModel(RevenueModel.getMonthlyRevenueReservations(), RevenueModel.RevenueColNameV);
+		model = new DefaultTableModel(RevenueController.getMonthlyRevenueReservations(), RevenueController.RevenueColNameV);
 		return new JTable(model);
 	}
 	static private void UpdateReservations() throws SQLException {
-		model.setDataVector(RevenueModel.getMonthlyRevenueReservations(), RevenueModel.RevenueColNameV);
+		model.setDataVector(RevenueController.getMonthlyRevenueReservations(), RevenueController.RevenueColNameV);
 	}
 	static private void UpdateOccupied() throws SQLException {
-		model.setDataVector(RevenueModel.getMonthlyDaysOccupied(), RevenueModel.RevenueColNameV);
+		model.setDataVector(RevenueController.getMonthlyDaysOccupied(), RevenueController.RevenueColNameV);
 	}
 	static private void UpdateRevenue() throws SQLException {
-		model.setDataVector(RevenueModel.getMonthlyRevenue(), RevenueModel.RevenueColNameV);
+		model.setDataVector(RevenueController.getMonthlyRevenue(), RevenueController.RevenueColNameV);
 	}
 
 }

@@ -1,4 +1,4 @@
-package owner;
+package calpoly.owner;
 /* 
  * @author Matthew Tondreau (mmtondre) 
  */
@@ -9,14 +9,14 @@ import calpoly.DatabaseHandle;
 
 
 
-public class OwnerModel {
-	private OwnerModel() {} /* Singleton */
+public class OwnerController {
+	private OwnerController() {} /* Singleton */
 	static public void setHandle(DatabaseHandle handle) {
 
-		RevenueModel.setHandle(handle);
-		RoomsModel.setHandle(handle);
-		ReservationModel.setHandle(handle);
-		OccupancyModel.setHandle(handle);
+		RevenueController.setHandle(handle);
+		RoomsController.setHandle(handle);
+		ReservationController.setHandle(handle);
+		OccupancyController.setHandle(handle);
 	}
 	static public Vector<Vector<String>> resToTable(ResultSet res) throws SQLException {
 		boolean f = res.next();

@@ -1,4 +1,4 @@
-package owner;
+package calpoly.owner;
 
 /* 
  * @author Matthew Tondreau (mmtondre) 
@@ -34,7 +34,7 @@ public class Occupancy {
 	static public Box createOccupancyTab(DatabaseHandle handle) {
 		Box vBox = Box.createVerticalBox();
 		Box hBox = Box.createHorizontalBox();
-		OccupancyModel.setHandle(handle);
+		OccupancyController.setHandle(handle);
 
 		OccStartText = new JTextField();
 		OccStartText.setMaximumSize(new Dimension(MaxComponentWidth,(int)(MaxComponentHeight*OccStartText.getFont().getSize())));
@@ -90,7 +90,7 @@ public class Occupancy {
 			this.date=date;
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
-			table = new JTable(OccupancyModel.getOccupancy(date), OccupancyModel.OccupancyColV);
+			table = new JTable(OccupancyController.getOccupancy(date), OccupancyController.OccupancyColV);
 			table.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					try {
@@ -129,7 +129,7 @@ public class Occupancy {
 			this.stop=stop;
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
-			table = new JTable(OccupancyModel.getOccupancy(start, stop), OccupancyModel.OccupancyColV);
+			table = new JTable(OccupancyController.getOccupancy(start, stop), OccupancyController.OccupancyColV);
 			table.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					try {

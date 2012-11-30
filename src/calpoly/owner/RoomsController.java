@@ -1,4 +1,4 @@
-package owner;
+package calpoly.owner;
 /* 
  * @author Matthew Tondreau (mmtondre) 
  */
@@ -9,18 +9,18 @@ import java.util.Vector;
 import calpoly.DatabaseConstants;
 import calpoly.DatabaseHandle;
 
-public class RoomsModel {
+public class RoomsController {
 	
-	private RoomsModel(){};
+	private RoomsController(){};
 	private static DatabaseHandle handle;
 	public static void setHandle(DatabaseHandle handle) {
-		RoomsModel.handle = handle;
+		RoomsController.handle = handle;
 	}
 	static public final String [] roomsCol = {"Room Name"}; 
 	static final public Vector<String> roomsColV = new Vector<String>(Arrays.asList(roomsCol));
 	static public Vector<Vector<String>> getRooms() throws SQLException {
 		String query = "SELECT name FROM Rooms";
-		return OwnerModel.resToTable(handle.executeQuery(query));
+		return OwnerController.resToTable(handle.executeQuery(query));
 	}
 	
 	
@@ -29,6 +29,6 @@ public class RoomsModel {
 	static public String [] getInformation( String roomName) throws SQLException {
 		String query = "SELECT * FROM Rooms WHERE name='"+roomName+"'";
 		
-		return OwnerModel.resToArray(handle.executeQuery(query));
+		return OwnerController.resToArray(handle.executeQuery(query));
 	}
 }

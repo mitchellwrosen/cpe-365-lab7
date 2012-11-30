@@ -1,4 +1,4 @@
-package owner;
+package calpoly.owner;
 /* 
  * @author Matthew Tondreau (mmtondre) 
  */
@@ -9,10 +9,10 @@ import java.util.Vector;
 
 import calpoly.DatabaseHandle;
 
-public class RevenueModel {
+public class RevenueController {
 	static private DatabaseHandle handle;
 	static public void setHandle(DatabaseHandle handle) {
-		RevenueModel.handle = handle;
+		RevenueController.handle = handle;
 	}
 	static public final int RowSize = 14;
 	static public final String [] RevenueColName =  {"Room", "Jan.", "Feb.", "Mar.",
