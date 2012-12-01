@@ -1,20 +1,22 @@
-package owner;
-
+package calpoly.owner;
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Vector;
-
-import calpoly.DatabaseConstants;
 import calpoly.DatabaseHandle;
 
 
 
-public class OwnerModel {
-	static private DatabaseHandle handle;
-	private OwnerModel() {} /* Singleton */
+public class OwnerController {
+	private OwnerController() {} /* Singleton */
 	static public void setHandle(DatabaseHandle handle) {
-		OwnerModel.handle=handle;
+
+		RevenueController.setHandle(handle);
+		RoomsController.setHandle(handle);
+		ReservationController.setHandle(handle);
+		OccupancyController.setHandle(handle);
 	}
 	static public Vector<Vector<String>> resToTable(ResultSet res) throws SQLException {
 		boolean f = res.next();

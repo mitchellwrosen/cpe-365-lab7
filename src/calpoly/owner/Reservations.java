@@ -1,5 +1,7 @@
-package owner;
-
+package calpoly.owner;
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -9,11 +11,9 @@ import java.sql.SQLException;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
 import calpoly.DatabaseHandle;
 import calpoly.OwnerPanel;
@@ -27,7 +27,7 @@ public class Reservations {
 	static private final int strutSize = 15;
 	
 	public static Box createReservationsTab(DatabaseHandle handle) {
-		ReservationModel.setHandle(handle);
+		ReservationController.setHandle(handle);
 		
 		Box hBox = Box.createHorizontalBox();
 		Box vBox = Box.createVerticalBox();
@@ -79,14 +79,14 @@ public class Reservations {
 		String stop = ReservationStopText.getText();
 		System.out.println("User Input->"+room +" "+ start +" "+ stop);
 		try {
-			model.setDataVector(ReservationModel.getReservations(start,stop,room), ReservationModel.ReservationColNameV);
+			model.setDataVector(ReservationController.getReservations(start,stop,room), ReservationController.ReservationColNameV);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	static private JTable createReservationsTable() throws SQLException {
-		model = new DefaultTableModel(ReservationModel.getReservations("","",""),ReservationModel.ReservationColNameV);
+		model = new DefaultTableModel(ReservationController.getReservations("","",""),ReservationController.ReservationColNameV);
 		JTable ret = new JTable(model);
 		ret.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e) {

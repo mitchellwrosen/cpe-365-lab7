@@ -1,4 +1,8 @@
-package owner;
+package calpoly.owner;
+
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -14,11 +18,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-
-import calpoly.DatabaseConstants;
 import calpoly.DatabaseHandle;
 import calpoly.OwnerPanel;
 
@@ -33,7 +34,7 @@ public class Occupancy {
 	static public Box createOccupancyTab(DatabaseHandle handle) {
 		Box vBox = Box.createVerticalBox();
 		Box hBox = Box.createHorizontalBox();
-		OccupancyModel.setHandle(handle);
+		OccupancyController.setHandle(handle);
 
 		OccStartText = new JTextField();
 		OccStartText.setMaximumSize(new Dimension(MaxComponentWidth,(int)(MaxComponentHeight*OccStartText.getFont().getSize())));
@@ -81,6 +82,7 @@ public class Occupancy {
 	/* For single date entries */
 	static class ReservationFrame extends JFrame {
 		private static final long serialVersionUID = 1L;
+		static final private int roomNameColPos = 0;
 		private JPanel panel;
 		private JTable table;
 		private final String date; 
@@ -88,7 +90,7 @@ public class Occupancy {
 			this.date=date;
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
-			table = new JTable(OccupancyModel.getOccupancy(date), OccupancyModel.OccupancyColV);
+			table = new JTable(OccupancyController.getOccupancy(date), OccupancyController.OccupancyColV);
 			table.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					try {
@@ -98,7 +100,7 @@ public class Occupancy {
 					}
 				}
 			});
-			
+			this.setTitle(date);
 			vBox.add(new JScrollPane(table));
 			panel.add(vBox);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -110,13 +112,14 @@ public class Occupancy {
 			JTable target = (JTable)e.getSource();
 			int row = target.getSelectedRow();
 			/* Display Selected Rows detailed info */
-			new OwnerPanel.ReservationDetailedPopup((String)target.getValueAt(row, 0),date).setVisible(true); /*TODO: replace magic */
+			new OwnerPanel.ReservationDetailedPopup((String)target.getValueAt(row, roomNameColPos),date).setVisible(true);
 		}
 	}
 
 	/* For two date entries */
 	static class ReservationListFrame extends JFrame {
 		private static final long serialVersionUID = 1L;
+		static final private int roomNameColPos = 0;
 		private JPanel panel;
 		private JTable table;
 		private final String start;
@@ -126,7 +129,7 @@ public class Occupancy {
 			this.stop=stop;
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
-			table = new JTable(OccupancyModel.getOccupancy(start, stop), OccupancyModel.OccupancyColV);
+			table = new JTable(OccupancyController.getOccupancy(start, stop), OccupancyController.OccupancyColV);
 			table.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					try {
@@ -136,6 +139,7 @@ public class Occupancy {
 					}
 				}
 			});
+			this.setTitle(start+" - "+stop);
 			vBox.add(new JScrollPane(table));
 			panel.add(vBox);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -143,11 +147,12 @@ public class Occupancy {
 			pack();
 
 		}
+		
 		private void Action( MouseEvent e ) throws SQLException {
 			JTable target = (JTable)e.getSource();
 			int row = target.getSelectedRow();
 			/* Display Selected rows list of reservations in that interval */
-			new OwnerPanel.ReservationListPopup((String)target.getValueAt(row, 0),start, stop).setVisible(true); /*TODO: Replace Magic Number */
+			new OwnerPanel.ReservationListPopup((String)target.getValueAt(row, roomNameColPos),start, stop).setVisible(true);
 		}
 	}
 	

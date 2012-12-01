@@ -1,5 +1,7 @@
-package owner;
-
+package calpoly.owner;
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -11,7 +13,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 
 import calpoly.DatabaseConstants;
@@ -25,7 +26,7 @@ public class Rooms {
 	static private final int strutSize = 15;
 
 	public static Box createRoomsTab(DatabaseHandle handle) {
-		RoomsModel.setHandle(handle);
+		RoomsController.setHandle(handle);
 		Box hBox = Box.createHorizontalBox();
 		Box vBox = Box.createVerticalBox();
 
@@ -84,7 +85,7 @@ public class Rooms {
 	}
 
 	static private JTable createRoomsTable() throws SQLException {
-		return new JTable(RoomsModel.getRooms(), RoomsModel.roomsColV);
+		return new JTable(RoomsController.getRooms(), RoomsController.roomsColV);
 	}
 
 	static public class RoomInfoPanel extends JFrame {
@@ -97,43 +98,20 @@ public class Rooms {
 			add(panel);
 			Box vBox = Box.createVerticalBox();
 			vBox.add(Box.createVerticalStrut(strutSize));
-			String [] data = RoomsModel.getInformation(roomName);
+			String [] data = RoomsController.getInformation(roomName);
 			for (int i = 0; i <data.length; ++i) {
 				Box hBox = Box.createHorizontalBox();
 				hBox.add(new JLabel(DatabaseConstants.ROOMS_ATTRS[i]+":"));
 				hBox.add(Box.createHorizontalStrut(strutSize));
-				hBox.add(new JLabel(data[i])); /* TODO: Implement */
+				hBox.add(new JLabel(data[i])); 
 				vBox.add(hBox);
 				vBox.add(Box.createVerticalStrut(strutSize));
 			}
 			panel.add(vBox);
-
+			this.setTitle(roomName);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 			pack();
 		}
 	};
 
-	public class DetailedReservationPanel extends JFrame {
-		private static final long serialVersionUID = 1L;
-		private JPanel panel;
-
-		public DetailedReservationPanel(String ID) {
-			panel = new JPanel();
-			add(panel);
-			Box vBox = Box.createVerticalBox();
-			vBox.add(Box.createVerticalStrut(strutSize));
-
-			for (String str : DatabaseConstants.RESERVATIONS_ATTRS) {
-				Box hBox = Box.createHorizontalBox();
-				hBox.add(new JLabel(str + ":"));
-				hBox.add(Box.createHorizontalStrut(strutSize));
-				hBox.add(new JLabel("N/A")); /* TODO: Implement */
-				vBox.add(hBox);
-				vBox.add(Box.createVerticalStrut(strutSize));
-			}
-			panel.add(vBox);
-			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-			pack();
-		}
-	}
 }

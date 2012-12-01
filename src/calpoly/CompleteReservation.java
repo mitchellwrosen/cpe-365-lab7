@@ -1,4 +1,11 @@
 package calpoly;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -20,6 +27,18 @@ public class CompleteReservation extends javax.swing.JDialog
         guestPanel = panel;
         initComponents();
     }
+    
+    private String createDate(int numMonth, int numDay, int numYear)
+    {
+        String month = Integer.toString(numMonth);
+        String day = Integer.toString(numDay);
+        String year = Integer.toString(numYear);
+        Calendar c = Calendar.getInstance();
+        c.set(numYear, numMonth-1, numDay);
+                
+        return numDay + "-" + c.getDisplayName(Calendar.MONTH, Calendar.SHORT,
+                Locale.ENGLISH).toUpperCase() + "-" + numYear;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,21 +50,22 @@ public class CompleteReservation extends javax.swing.JDialog
     private void initComponents()
     {
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
+        discountButtonGroup = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jSpinner1 = new javax.swing.JSpinner();
+        lastNameTextField = new javax.swing.JTextField();
+        firstNameTextField = new javax.swing.JTextField();
+        numAdultsSpinner = new javax.swing.JSpinner();
         jLabel5 = new javax.swing.JLabel();
-        jSpinner2 = new javax.swing.JSpinner();
+        numKidsSpinner = new javax.swing.JSpinner();
         jLabel6 = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
-        jButton1 = new javax.swing.JButton();
+        noDiscountButton = new javax.swing.JRadioButton();
+        aaaDiscountButton = new javax.swing.JRadioButton();
+        aarpDiscountButton = new javax.swing.JRadioButton();
+        completeReservationButton = new javax.swing.JButton();
+        errorLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -58,27 +78,30 @@ public class CompleteReservation extends javax.swing.JDialog
 
         jLabel4.setText("First Name:");
 
-        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(1, 1, 5, 1));
+        numAdultsSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
 
         jLabel5.setText("Number of Kids:");
 
-        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(0, 0, 5, 1));
+        numKidsSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 5, 1));
 
         jLabel6.setText("Discounts:");
 
-        jRadioButton1.setSelected(true);
-        jRadioButton1.setText("No Discount");
+        discountButtonGroup.add(noDiscountButton);
+        noDiscountButton.setSelected(true);
+        noDiscountButton.setText("No Discount");
 
-        jRadioButton2.setText("AAA Discount (10%)");
+        discountButtonGroup.add(aaaDiscountButton);
+        aaaDiscountButton.setText("AAA Discount (10%)");
 
-        jRadioButton3.setText("AARP Discount (15%)");
+        discountButtonGroup.add(aarpDiscountButton);
+        aarpDiscountButton.setText("AARP Discount (15%)");
 
-        jButton1.setText("Make my reservation!");
-        jButton1.addActionListener(new java.awt.event.ActionListener()
+        completeReservationButton.setText("Make my reservation!");
+        completeReservationButton.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
-                jButton1ActionPerformed(evt);
+                completeReservationButtonActionPerformed(evt);
             }
         });
 
@@ -94,31 +117,34 @@ public class CompleteReservation extends javax.swing.JDialog
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(lastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jLabel1)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(numAdultsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField2))
+                                .addComponent(firstNameTextField))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(numKidsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 96, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jRadioButton3)
-                            .addComponent(jRadioButton2)
+                            .addComponent(aarpDiscountButton)
+                            .addComponent(aaaDiscountButton)
                             .addComponent(jLabel6)
-                            .addComponent(jRadioButton1))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(noDiscountButton))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(completeReservationButton, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(errorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -129,50 +155,157 @@ public class CompleteReservation extends javax.swing.JDialog
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(firstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(numAdultsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5)
-                    .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(numKidsSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton1)
+                .addComponent(noDiscountButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton2)
+                .addComponent(aaaDiscountButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton3)
+                .addComponent(aarpDiscountButton)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(completeReservationButton, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(errorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 87, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
-    {//GEN-HEADEREND:event_jButton1ActionPerformed
+    private void completeReservationButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_completeReservationButtonActionPerformed
+    {//GEN-HEADEREND:event_completeReservationButtonActionPerformed
+        String firstName = firstNameTextField.getText().trim();
+        String lastName = lastNameTextField.getText().trim();
+        int numAdults = (Integer)numAdultsSpinner.getValue();
+        int numKids = (Integer)numKidsSpinner.getValue();
+        int occupancy = 0;
+        double rate = guestPanel.getRate();
+        String room = guestPanel.getRoom();
+        ResultSet result;
+        ArrayList<Integer> codeList = new ArrayList<Integer>();
+        DatabaseHandle handle = guestPanel.getHandle();
+        int code = 100000;
+        String checkInDate;
+        String checkOutDate;
+        String roomId;
+        
+        if (firstName.length() > 0 && lastName.length() > 0)
+        {
+            //check if past max capacity
+            handle.createStatement();
+            result = handle.executeQuery("Select MaxOccupancy from Rooms where Name = '" + room + "'");
+            try
+            {
+                while(result.next())
+                {
+                    occupancy = result.getInt("MaxOccupancy");
+                }
+            }
+            catch (SQLException ex)
+            {
+                System.out.println("Occupancy: " + ex);
+                return;
+            }
+        }
+        else
+        {
+            errorLabel.setText("Please enter a valid first and last name.");
+            return;
+        }
+        
+        if (occupancy < (numKids + numAdults))
+        {
+            errorLabel.setText("Number of people has exceeded max occupancy.");
+            return;
+        }
+        
+        if (discountButtonGroup.getSelection() == aaaDiscountButton)
+        {
+            rate *= .9;
+        }
+        
+        else if (discountButtonGroup.getSelection() == aarpDiscountButton)
+        {
+            rate *= .85;
+        }
+        
+        //generate Code
+        handle.createStatement();
+        result = handle.executeQuery("Select * from Reservations");
+        
+        try
+        {
+            while(result.next())
+            {
+                codeList.add(result.getInt("Code"));
+            }
+        }
+        catch (SQLException ex)
+        {
+            System.out.println("Code: " + ex);
+            return;
+        }
+        
+        while(codeList.contains(code))
+        {
+            code++;
+        }
+        
+        //fetch roomId    
+        handle.createStatement();
+        result = handle.executeQuery("Select * from Rooms where Name = '" + room + "'");
+        
+        try
+        {
+            result.next();
+            roomId = result.getString("Id");
+        }
+        catch (SQLException ex)
+        {
+            System.out.println("Id: " + ex);
+            return;
+        }
+        
+        //get and convert checkIn/checkOut dates
+        checkInDate = createDate(guestPanel.getCheckInMonth(),
+                guestPanel.getCheckInDay(), guestPanel.getCheckInYear());
+        
+        checkOutDate = createDate(guestPanel.getCheckOutMonth(),
+                guestPanel.getCheckOutDay(), guestPanel.getCheckOutYear());
+        
+        handle.createStatement();
+        handle.executeStatement("INSERT INTO Reservations VALUES (" + code +
+                ",'" + roomId + "', '" + checkInDate + "', '" + checkOutDate +
+                "', " + rate + ", '" + lastName.toUpperCase() + "', '" +
+                firstName.toUpperCase() + "', " + numAdults + ", " + numKids + ")");
         this.dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_completeReservationButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JRadioButton aaaDiscountButton;
+    private javax.swing.JRadioButton aarpDiscountButton;
+    private javax.swing.JButton completeReservationButton;
+    private javax.swing.ButtonGroup discountButtonGroup;
+    private javax.swing.JLabel errorLabel;
+    private javax.swing.JTextField firstNameTextField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JSpinner jSpinner2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField lastNameTextField;
+    private javax.swing.JRadioButton noDiscountButton;
+    private javax.swing.JSpinner numAdultsSpinner;
+    private javax.swing.JSpinner numKidsSpinner;
     // End of variables declaration//GEN-END:variables
 }

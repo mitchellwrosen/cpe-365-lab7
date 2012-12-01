@@ -1,5 +1,7 @@
 package calpoly;
-
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
@@ -13,12 +15,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 
-import owner.Occupancy;
-import owner.OccupancyModel;
-import owner.OwnerModel;
-import owner.Reservations;
-import owner.Revenue;
-import owner.Rooms;
+import calpoly.owner.Occupancy;
+import calpoly.owner.OccupancyController;
+import calpoly.owner.OwnerController;
+import calpoly.owner.Reservations;
+import calpoly.owner.Revenue;
+import calpoly.owner.Rooms;
+
 
 public class OwnerPanel extends JPanel {
 	private DatabaseHandle handle;
@@ -29,7 +32,7 @@ public class OwnerPanel extends JPanel {
 	public static String DefaultStart = "01-JAN-2010";
 	public OwnerPanel(DatabaseHandle handle) {
 		this.handle = handle;
-		OwnerModel.setHandle(handle);
+		OwnerController.setHandle(handle);
 		createOwnerTabs();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 	}
@@ -53,7 +56,7 @@ public class OwnerPanel extends JPanel {
 			
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
-			table = new JTable(OccupancyModel.getRoomOccupancy(start,stop,roomName),OccupancyModel.roomOccupancyColV);
+			table = new JTable(OccupancyController.getRoomOccupancy(start,stop,roomName),OccupancyController.roomOccupancyColV);
 			table.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					try {
@@ -63,6 +66,7 @@ public class OwnerPanel extends JPanel {
 					}
 				}
 			});
+			this.setTitle(roomName+" "+start+" - "+stop );
 			vBox.add(new JScrollPane(table));
 			panel.add(vBox);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -85,7 +89,7 @@ public class OwnerPanel extends JPanel {
 		public ReservationDetailedPopup(String rsvID) throws SQLException {
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
-			String [] data = OccupancyModel.getReservation(rsvID);
+			String [] data = OccupancyController.getReservation(rsvID);
 			for( int i = 0; i < data.length; ++i) {
 				Box hBox = Box.createHorizontalBox();
 				hBox.add(new JLabel(DatabaseConstants.RESERVATIONS_ATTRS[i]));
@@ -93,7 +97,7 @@ public class OwnerPanel extends JPanel {
 				hBox.add(new JLabel(data[i]));
 				vBox.add(hBox);
 			}
-			
+			this.setTitle(rsvID);
 			panel.add(vBox);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 			this.add(panel);
@@ -103,7 +107,7 @@ public class OwnerPanel extends JPanel {
 		public ReservationDetailedPopup(String roomName, String date) throws SQLException {
 			panel = new JPanel();
 			Box vBox = Box.createVerticalBox();
-			String [] data = OccupancyModel.getReservation(roomName, date);
+			String [] data = OccupancyController.getReservation(roomName, date);
 			for( int i = 0; i < data.length; ++i) {
 				Box hBox = Box.createHorizontalBox();
 				hBox.add(new JLabel(DatabaseConstants.RESERVATIONS_ATTRS[i]));
@@ -115,6 +119,7 @@ public class OwnerPanel extends JPanel {
 			panel.add(vBox);
 			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 			this.add(panel);
+			this.setTitle(roomName + " " + date);
 			pack();
 
 		}

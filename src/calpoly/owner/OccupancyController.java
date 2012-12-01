@@ -1,5 +1,7 @@
-package owner;
-
+package calpoly.owner;
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Vector;
@@ -7,11 +9,11 @@ import java.util.Vector;
 import calpoly.DatabaseConstants;
 import calpoly.DatabaseHandle;
 
-public class OccupancyModel {
+public class OccupancyController {
 	private static DatabaseHandle handle;
-	private OccupancyModel() {} /* SINGLETON */
+	private OccupancyController() {} /* SINGLETON */
 	public static void setHandle(DatabaseHandle handle) {
-		OccupancyModel.handle = handle;
+		OccupancyController.handle = handle;
 	}
 	
 	public final static String [] OccupancyCol = { "Room", "Status" };
@@ -34,7 +36,7 @@ public class OccupancyModel {
 				" AND CheckInDate<'"+Date+"'"+
 				" AND CheckOutDate>'"+Date+"'))";
 			System.out.println(query);
-		return OwnerModel.resToTable(handle.executeQuery(query));
+		return OwnerController.resToTable(handle.executeQuery(query));
 	}
 	
 	public final static Vector<String> OccupancyColV = new Vector<String>(Arrays.asList(OccupancyCol));
@@ -106,7 +108,7 @@ public class OccupancyModel {
 		
 		
 		
-		return OwnerModel.resToTable(handle.executeQuery(query));
+		return OwnerController.resToTable(handle.executeQuery(query));
 	}
 	static final public String [] roomOccupancyCol =  { "Reservation", "CheckInDate","CheckOutDate", "Last Name" };
 	static final public Vector<String> roomOccupancyColV = new Vector<String>(Arrays.asList(roomOccupancyCol));
@@ -118,7 +120,7 @@ public class OccupancyModel {
 					   " AND CheckInDate<='"+end+"'"+
 					   " AND CheckOutDate>'"+start+"'";
 		
-		return OwnerModel.resToTable(handle.executeQuery(query));
+		return OwnerController.resToTable(handle.executeQuery(query));
 	}
 	
 	static public String [] getReservation( String roomName, String date) throws SQLException {
@@ -127,13 +129,13 @@ public class OccupancyModel {
 					   " AND CheckInDate<='" +date + "'"+
 					   " AND CheckOutDate>'"+date+"'";
 		
-		return OwnerModel.resToArray(handle.executeQuery(query));
+		return OwnerController.resToArray(handle.executeQuery(query));
 	}
 	
 	static final public Vector<String> DCreservationCols = new Vector<String>(Arrays.asList(DatabaseConstants.RESERVATIONS_ATTRS));
 	static public String [] getReservation( String reservationId) throws SQLException {
 		String query = "SELECT * FROM Reservations RE" +
 					   " WHERE Code='"+reservationId+"'";
-		return OwnerModel.resToArray(handle.executeQuery(query));
+		return OwnerController.resToArray(handle.executeQuery(query));
 	}
 }

@@ -1,5 +1,7 @@
-package owner;
-
+package calpoly.owner;
+/* 
+ * @author Matthew Tondreau (mmtondre) 
+ */
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Vector;
@@ -7,12 +9,12 @@ import java.util.Vector;
 import calpoly.DatabaseHandle;
 import calpoly.OwnerPanel;
 
-public class ReservationModel {
+public class ReservationController {
 	private static DatabaseHandle handle;
-	private ReservationModel(){}
+	private ReservationController(){}
 	
 	public static void setHandle(DatabaseHandle handle) {
-		ReservationModel.handle = handle;
+		ReservationController.handle = handle;
 	}
 	static public final String [] ReservationColName = { "Id.", "Room Name", "Check In",
 	"Check Out" };
@@ -28,6 +30,6 @@ public class ReservationModel {
 					
 		
 		
-		return OwnerModel.resToTable(handle.executeQuery(query));
+		return OwnerController.resToTable(handle.executeQuery(query));
 	}
 }
